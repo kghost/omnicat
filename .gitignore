@@ -259,3 +259,31 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# Linux
+/INSTALL
+/aclocal.m4
+/autom4te.cache/
+/compile
+/config.guess
+/config.h
+/config.h.in
+/config.status
+/config.sub
+/configure
+/depcomp
+/install-sh
+/libtool
+/ltmain.sh
+/m4/
+/missing
+/stamp-h1
+Makefile
+Makefile.in
+.deps
+.libs
+*.la
+*.o
+*.lo
+# output
+/omnicat/omnicat
