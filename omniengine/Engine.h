@@ -20,10 +20,10 @@ namespace Omni {
 			}
 		}
 
-		EXPORT void loadModule(const std::string & name);
+		SHARED void loadModule(const std::string & name);
 	private:
 		std::map<std::string, std::shared_ptr<Class>> classes;
 	};
 
-	EXPORT std::shared_ptr<Engine> getEngine();
+	SHARED std::shared_ptr<Engine> getEngine();
 }

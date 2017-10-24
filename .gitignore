@@ -291,3 +291,4 @@ Makefile.in
 # Custom
 /.vscode
 *.swp
+/tags

@@ -1,3 +1,5 @@
+#include "../common/header.h"
+
 #include "EntityAcceptor.h"
 
 #include <boost/asio.hpp>

@@ -16,10 +16,12 @@ AC_SUBST(ISODATE)
 AC_CANONICAL_HOST
 
 AC_PROG_INSTALL
-AC_PROG_CC(clang gcc)
-AC_PROG_CPP(clang++ g++)
-AC_PROG_CXX(clang++ g++)
-AX_CXX_COMPILE_STDCXX_14
+AC_PROG_CC(gcc)
+AC_PROG_CPP(g++)
+AC_PROG_CXX(g++)
+AX_CXX_COMPILE_STDCXX_14(noext)
+
+gl_VISIBILITY
 
 dnl AC_CHECK_TOOL([OBJCOPY], [objcopy])
 
@@ -27,7 +29,7 @@ dnl Checks for libraries.
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(unistd.h sys/param.h sys/time.h time.h sys/mkdev.h sys/sysmacros.h string.h memory.h fcntl.h dirent.h sys/ndir.h ndir.h alloca.h locale.h dlfcn.h)
+AC_CHECK_HEADERS(unistd.h sys/param.h sys/time.h time.h sys/mkdev.h sys/sysmacros.h string.h memory.h fcntl.h dirent.h sys/ndir.h ndir.h alloca.h locale.h dlfcn.h execinfo.h)
 
 AC_HEADER_MAJOR
 AC_FUNC_ALLOCA
@@ -45,6 +47,10 @@ AX_BOOST_PROGRAM_OPTIONS
 AX_BOOST_ASIO
 AX_BOOST_FILESYSTEM
 AX_BOOST_THREAD
+
+AC_ARG_WITH([moduledir], [AS_HELP_STRING([--with-moduledir=DIR], [where to install and load dynamic module files])],
+			[moduledir=$withval], [moduledir="\${libdir}/omnicat"])
+AC_SUBST([MODULEDIR], [$moduledir])
 
 dnl AC_CHECK_LIB(zlib, zlib)
 

@@ -2,20 +2,45 @@
 
 #include "Engine.h"
 
+#ifdef __linux__
+#include <boost/type_traits/function_traits.hpp>
+#include <boost/type_traits/remove_pointer.hpp>
+#endif
+
 #ifdef HAVE_DLFCN_H
 #include <dlfcn.h>
+#endif
+
+#ifdef HAVE_EXECINFO_H
+#include <execinfo.h>
 #endif
 
 #include "Module.h"
 
 namespace Omni {
-	std::shared_ptr<Module> getModule() {
-#ifdef __linux__ 
+#ifdef __linux__
+	// export the symbol so backtrace_symbols can retrieve the function name
+	EXPORT std::shared_ptr<Module> getModule() {
+		std::array<
+			boost::remove_pointer<
+				boost::function_traits<decltype(::backtrace)>::arg1_type
+			>::type,
+			1
+		> stacks;
+		auto count = ::backtrace(stacks.data(), stacks.size());
+		auto funcs = std::shared_ptr<
+			boost::remove_pointer<
+				boost::function_traits<decltype(::backtrace_symbols)>::result_type
+			>::type
+		>(::backtrace_symbols(stacks.data(), count), ::free);
+		throw std::string(funcs.get()[0]);
+	}
 #elif _WIN32
+	std::shared_ptr<Module> getModule() {
 		throw std::string(__FUNCDNAME__);
+	}
 #else
 #endif
-	}
 
 	std::string getFunctionName() {
 		try {
