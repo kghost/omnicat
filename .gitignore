@@ -287,3 +287,7 @@ Makefile.in
 *.lo
 # output
 /omnicat/omnicat
+
+# Custom
+/.vscode
+*.swp
