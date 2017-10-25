@@ -11,7 +11,6 @@ namespace Omni {
 		ClassTcpConnector(std::shared_ptr<Engine> engine) : Class(engine) {};
 		virtual ~ClassTcpConnector() {};
 
-		virtual std::shared_ptr<Entity> defaultHanlder();
-		virtual std::shared_ptr<Entity> createEntity(std::map<std::string, std::string> options, std::shared_ptr<Entity> handler);
+		virtual std::shared_ptr<Entity> createEntity(const Parser::Tree & tree) { OMNI_INTERNAL_ERROR; };
 	};
 }

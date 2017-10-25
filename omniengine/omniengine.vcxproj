@@ -162,6 +162,7 @@
     <ClInclude Include="Instance.h" />
     <ClInclude Include="Key.h" />
     <ClInclude Include="Module.h" />
+    <ClInclude Include="Parser.h" />
     <ClInclude Include="shared.h" />
     <ClInclude Include="Resolver.h" />
   </ItemGroup>
@@ -171,6 +172,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="Instance.cpp" />
+    <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Resolver.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

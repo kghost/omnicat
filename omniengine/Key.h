@@ -10,15 +10,10 @@ namespace Omni {
 		Key(std::string symbol) : symbol(symbol) {}
 		Key(const Key &) = delete;
 		Key & operator=(const Key &) = delete;
+
+		bool operator==(const Key & that) { return this == &that; }
+		bool operator<(const Key & that) { return this < &that; }
 	private:
 		boost::optional<std::string> symbol;
-	};
-}
-
-namespace std {
-	template<> class less<Omni::Key> {
-		bool operator() (const Omni::Key& lhs, const Omni::Key& rhs) const {
-			return &lhs < &rhs;
-		}
 	};
 }

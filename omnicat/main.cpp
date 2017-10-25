@@ -23,7 +23,6 @@ int main(int argc, char *argv[], char *envp[])
 	try {
 		auto engine = Omni::getEngine();
 		engine->loadModule("omnimodule-base");
-		engine->getClass("TCP-LISTEN")->createEntity(std::map<std::string, std::string>());
 	} catch (const Omni::Exception & exception) {
 #ifdef USE_WIDECHAR_API
 		std::wcerr << convUTF8toUCS2(std::string(exception.what())) << std::endl;

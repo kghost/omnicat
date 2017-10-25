@@ -2,6 +2,9 @@
 
 #include "Engine.h"
 
+#ifdef _WIN32
+#include <boost/type_traits/remove_pointer.hpp>
+#endif
 #ifdef __linux__
 #include <boost/type_traits/function_traits.hpp>
 #endif
@@ -43,8 +46,8 @@ namespace Omni {
 		boost::filesystem::path m(name);
 		m.make_preferred();
 #ifdef _WIN32
-		static const boost::filesystem::path dir = "./"
-		static const std::string ext = ".dll"
+		static const boost::filesystem::path dir = "./";
+		static const std::string ext = ".dll";
 #else
 		static const boost::filesystem::path dir = PKGLIBDIR;
 		static const std::string ext = LT_MODULE_EXT;
@@ -65,7 +68,7 @@ namespace Omni {
 			::FormatMessage(
 				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 				NULL, err, 0, (LPWSTR)&buff, 0, NULL);
-			std::shared_ptr p(buff, &::LocalFree);
+			std::shared_ptr<boost::remove_pointer<decltype(buff)>::type> p(buff, &::LocalFree);
 			throw ExceptionModuleNotFound(m.string(), convUCS2toUTF8(std::wstring(buff)));
 		}
 
