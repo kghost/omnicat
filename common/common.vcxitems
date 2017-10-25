@@ -15,6 +15,5 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)header.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Win.h" />
   </ItemGroup>
 </Project>

@@ -89,7 +89,7 @@ namespace Omni {
 		}
 	}
 
-	EXPORT std::shared_ptr<Engine> getEngine() {
+	std::shared_ptr<Engine> getEngine() {
 		return std::make_shared<Engine>();
 	}
 }

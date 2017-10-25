@@ -6,6 +6,8 @@
 
 #include "Exception.h"
 
+#include "shared.h"
+
 namespace Omni {
 	class Class;
 	class Engine : public std::enable_shared_from_this<Engine> {
@@ -20,10 +22,10 @@ namespace Omni {
 			}
 		}
 
-		SHARED void loadModule(const std::string & name);
+		SHARED_DEFINE void loadModule(const std::string & name);
 	private:
 		std::map<std::string, std::shared_ptr<Class>> classes;
 	};
 
-	SHARED std::shared_ptr<Engine> getEngine();
+	SHARED_DECLARE std::shared_ptr<Engine> getEngine();
 }
