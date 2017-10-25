@@ -4,36 +4,25 @@
 
 #ifdef __linux__
 #include <boost/type_traits/function_traits.hpp>
-#include <boost/type_traits/remove_pointer.hpp>
 #endif
 
 #ifdef HAVE_DLFCN_H
 #include <dlfcn.h>
 #endif
 
-#ifdef HAVE_EXECINFO_H
-#include <execinfo.h>
-#endif
+#include <boost/filesystem.hpp>
 
 #include "Module.h"
 
 namespace Omni {
+	Engine::Engine() {}
+
 #ifdef __linux__
 	// export the symbol so backtrace_symbols can retrieve the function name
 	EXPORT std::shared_ptr<Module> getModule() {
-		std::array<
-			boost::remove_pointer<
-				boost::function_traits<decltype(::backtrace)>::arg1_type
-			>::type,
-			1
-		> stacks;
-		auto count = ::backtrace(stacks.data(), stacks.size());
-		auto funcs = std::shared_ptr<
-			boost::remove_pointer<
-				boost::function_traits<decltype(::backtrace_symbols)>::result_type
-			>::type
-		>(::backtrace_symbols(stacks.data(), count), ::free);
-		throw std::string(funcs.get()[0]);
+		Dl_info info;
+		::dladdr(reinterpret_cast<boost::function_traits<decltype(::dladdr)>::arg1_type>(&getModule), &info);
+		throw std::string(info.dli_sname);
 	}
 #elif _WIN32
 	std::shared_ptr<Module> getModule() {
@@ -41,7 +30,6 @@ namespace Omni {
 	}
 #else
 #endif
-
 	std::string getFunctionName() {
 		try {
 			getModule();
@@ -50,38 +38,44 @@ namespace Omni {
 		}
 		OMNI_INTERNAL_ERROR;
 	}
-	static std::string function = getFunctionName();
 
-	Engine::Engine() {}
+	SHARED_DEFINE void Engine::loadModule(const std::string & name) {
+		boost::filesystem::path m(name);
+		m.make_preferred();
+#ifdef _WIN32
+		static const boost::filesystem::path dir = "./"
+		static const std::string ext = ".dll"
+#else
+		static const boost::filesystem::path dir = PKGLIBDIR;
+		static const std::string ext = LT_MODULE_EXT;
+#endif
+		if (!m.has_extension()) m += ext;
+		if (!m.has_parent_path()) m = dir / m;
 
-	void Engine::loadModule(const std::string & name) {
+		static std::string fname = getFunctionName();
 #ifdef __linux__
-		double (*cosine)(double);
-		char *error;
-
-		auto lib = ::dlopen(name.c_str(), RTLD_LAZY);
-		if (lib == NULL) { throw ExceptionModuleNotFound(name, std::string(::dlerror())); }
-		auto proc = reinterpret_cast<decltype(&getModule)>(::dlsym(lib, function.c_str()));
-		auto module = proc();
-		// ::dlclose(lib);
+		auto lib = ::dlopen(m.c_str(), RTLD_LAZY);
+		if (lib == NULL) { throw ExceptionModuleNotFound(m.string(), std::string(::dlerror())); }
+		auto proc = reinterpret_cast<decltype(&getModule)>(::dlsym(lib, fname.c_str()));
 #elif _WIN32
-		auto lib = ::LoadLibrary(convUTF8toUCS2(name).c_str());
+		auto lib = ::LoadLibrary(m.c_str());
 		if (lib == NULL) {
 			auto err = ::GetLastError();
 			LPWSTR buff = NULL;
 			::FormatMessage(
 				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 				NULL, err, 0, (LPWSTR)&buff, 0, NULL);
-			auto reason = convUCS2toUTF8(std::wstring(buff));
-			::LocalFree(buff);
-			throw ExceptionModuleNotFound(name, reason);
+			std::shared_ptr p(buff, &::LocalFree);
+			throw ExceptionModuleNotFound(m.string(), convUCS2toUTF8(std::wstring(buff)));
 		}
 
-		auto proc = reinterpret_cast<decltype(&getModule)>(::GetProcAddress(lib, function.c_str()));
-		auto module = proc();
+		auto proc = reinterpret_cast<decltype(&getModule)>(::GetProcAddress(lib, fname.c_str()));
 #else
 #error
 #endif
+		if (proc == nullptr) throw ExceptionModuleNotFound(m.string(), "can't locate entry function");
+		auto module = proc();
+
 		for (auto entry : module->getClasses(shared_from_this())) {
 			// XXX: check for already exists entry
 			auto & i = classes[entry.first];
@@ -89,7 +83,7 @@ namespace Omni {
 		}
 	}
 
-	std::shared_ptr<Engine> getEngine() {
+	SHARED_DEFINE std::shared_ptr<Engine> getEngine() {
 		return std::make_shared<Engine>();
 	}
 }

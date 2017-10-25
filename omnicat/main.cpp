@@ -22,7 +22,7 @@ int main(int argc, char *argv[], char *envp[])
 #endif
 	try {
 		auto engine = Omni::getEngine();
-		engine->loadModule("omnimodule-base.dll");
+		engine->loadModule("omnimodule-base");
 		engine->getClass("TCP-LISTEN")->createEntity(std::map<std::string, std::string>());
 	} catch (const Omni::Exception & exception) {
 #ifdef USE_WIDECHAR_API

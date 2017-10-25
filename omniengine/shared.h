@@ -13,11 +13,11 @@
 #elif defined(__GNUC__)
 
 #ifdef OMNIENGINE_EXPORTS
-#define SHARED_CLASS __attribute__((visibility("default")))
-#define SHARED_INSTANCE extern __attribute__((visibility("default")))
+#define SHARED_DECLARE extern __attribute__((visibility("default")))
+#define SHARED_DEFINE __attribute__((visibility("default")))
 #else
-#define SHARED_CLASS
-#define SHARED_INSTANCE extern
+#define SHARED_DECLARE extern
+#define SHARED_DEFINE
 #endif
 
 #else

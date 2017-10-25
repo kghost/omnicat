@@ -1,7 +1,7 @@
 lib_LTLIBRARIES = libomniengine.la
 
-AM_CFLAGS = $(CFLAG_VISIBILITY)
-AM_CPPFLAGS = $(CFLAG_VISIBILITY)
+AM_CFLAGS = -DOMNIENGINE_EXPORTS -DPKGLIBDIR=\"$(pkglibdir)\" $(CFLAG_VISIBILITY)
+AM_CPPFLAGS = -DOMNIENGINE_EXPORTS -DPKGLIBDIR=\"$(pkglibdir)\" $(CFLAG_VISIBILITY)
 
 libomniengine_la_SOURCES = Engine.cpp Entity.cpp Resolver.cpp Instance.cpp Exception.cpp
 libomniengine_la_LDFLAGS = -ldl
