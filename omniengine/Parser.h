@@ -11,7 +11,7 @@ namespace Omni {
 		class Parser {
 		public:
 			SHARED_DEFINE Parser(std::shared_ptr<Engine> engine);
-			SHARED_DEFINE std::shared_ptr<Entity> Parser::Parser::parse(const std::string & input);
+			SHARED_DEFINE std::shared_ptr<Entity> parse(const std::string & input);
 		private:
 			std::shared_ptr<Engine> engine;
 		};

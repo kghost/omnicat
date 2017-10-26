@@ -5,6 +5,7 @@
 #include <boost/any.hpp>
 
 #include "utilities.h"
+#define BOOST_SPIRIT_USE_PHOENIX_V3
 #define BOOST_SPIRIT_UNICODE // We'll use unicode (UTF8) all throughout
 #include <boost/regex/pending/unicode_iterator.hpp>
 #ifdef _DEBUG
@@ -26,8 +27,6 @@
 
 namespace Omni {
 	namespace Parser {
-
-
 		SHARED_DEFINE Parser::Parser(std::shared_ptr<Engine> engine) : engine(engine) {}
 
 		std::string f(std::vector<std::vector<boost::uint32_t>> & v);
@@ -35,7 +34,7 @@ namespace Omni {
 		template <typename Iterator>
 		class gm : public boost::spirit::qi::grammar<Iterator, std::vector<boost::uint32_t>()> {
 		public:
-			gm() : base_type(result) {
+			gm() : gm::base_type(result) {
 				boost::spirit::qi::debug(double_quoted_char);
 				boost::spirit::qi::debug(single_quoted);
 				boost::spirit::qi::debug(double_quoted);
