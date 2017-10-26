@@ -9,7 +9,7 @@ namespace Omni {
 		std::tuple<Key, int, int>("a", 1, 1),
 	};
 
-	std::map<std::string, std::tuple<Key&, std::function<boost::any(const Parser::Tree&)>>> supportedOptions() {
+	//std::map<std::string, std::tuple<Key&, std::function<boost::any(const Parser::Tree&)>>> supportedOptions() {
 
-	}
+	//}
 }

@@ -27,5 +27,5 @@ namespace Omni {
 		std::map<std::string, std::shared_ptr<Class>> classes;
 	};
 
-	SHARED_DECLARE std::shared_ptr<Engine> getEngine();
+	extern SHARED_DEFINE std::shared_ptr<Engine> getEngine();
 }
