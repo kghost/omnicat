@@ -22,10 +22,10 @@ namespace Omni {
 			}
 		}
 
-		SHARED_DEFINE void loadModule(const std::string & name);
+		SHARED void loadModule(const std::string & name);
 	private:
 		std::map<std::string, std::shared_ptr<Class>> classes;
 	};
 
-	extern SHARED_DEFINE std::shared_ptr<Engine> getEngine();
+	extern SHARED std::shared_ptr<Engine> getEngine();
 }

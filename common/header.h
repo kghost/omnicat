@@ -18,10 +18,6 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <Windows.h>
 
-static std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-static inline std::wstring convUTF8toUCS2(const std::string & s) { return converter.from_bytes(s); }
-static inline std::string convUCS2toUTF8(const std::wstring & s) { return converter.to_bytes(s); }
-
 #define USE_WIDECHAR_API 1
 #else
 #endif
@@ -33,3 +29,7 @@ static inline std::string convUCS2toUTF8(const std::wstring & s) { return conver
 #else
     #pragma warning Unknown dynamic link import/export semantics.
 #endif
+
+static std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+static inline std::wstring fromUTF8(const std::string & s) { return converter.from_bytes(s); }
+static inline std::string toUTF8(const std::wstring & s) { return converter.to_bytes(s); }

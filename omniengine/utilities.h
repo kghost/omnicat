@@ -18,7 +18,7 @@ namespace Omni {
 		std::codecvt_utf8_utf16<extern_type> impl;
 	};
 
-	extern SHARED_DEFINE boost::iostreams::stream<
+	extern SHARED boost::iostreams::stream<
 		boost::iostreams::code_converter<std::wostream, codecvt_utf8_utf16_wchar<char, 0x10ffff, std::consume_header>>
 	> utf8cout;
 #endif

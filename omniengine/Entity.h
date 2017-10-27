@@ -12,6 +12,7 @@ namespace Omni {
 	class Instance;
 	class Entity {
 		virtual bool isPassive() = 0;
+		SHARED virtual void prepare();
 
 		virtual void createInstance(std::function<int()> callback) { OMNI_INTERNAL_ERROR; };
 		virtual void passiveCreateInstance(std::map<Key, boost::any> hints, std::function<int()> callback) { OMNI_INTERNAL_ERROR; };

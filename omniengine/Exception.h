@@ -12,7 +12,7 @@ namespace Omni {
 #pragma warning(disable: 4251)
 #pragma warning(disable: 4275)
 #endif
-	class SHARED_DEFINE Exception : public std::exception {
+	class SHARED Exception : public std::exception {
 	public:
 		Exception();
 		Exception(const std::string && what);
@@ -26,7 +26,7 @@ namespace Omni {
 #pragma warning(pop)
 #endif
 
-	class SHARED_DEFINE ExceptionInternalError : public Exception {
+	class SHARED ExceptionInternalError : public Exception {
 	public:
 		ExceptionInternalError(const char *msg);
 		~ExceptionInternalError();
@@ -34,13 +34,13 @@ namespace Omni {
 
 #define OMNI_INTERNAL_ERROR { throw ::Omni::ExceptionInternalError("Internal error. (@" __FILE__ ":"  BOOST_PP_STRINGIZE(__LINE__) ")"); }
 
-	class SHARED_DEFINE ExceptionClassNotFound : public Exception {
+	class SHARED ExceptionClassNotFound : public Exception {
 	public:
 		ExceptionClassNotFound(const std::string & name);
 		~ExceptionClassNotFound();
 	};
 
-	class SHARED_DEFINE ExceptionModuleNotFound : public Exception {
+	class SHARED ExceptionModuleNotFound : public Exception {
 	public:
 		ExceptionModuleNotFound(const std::string & name, const std::string & reason);
 		~ExceptionModuleNotFound();

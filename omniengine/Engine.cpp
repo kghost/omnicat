@@ -42,7 +42,7 @@ namespace Omni {
 		OMNI_INTERNAL_ERROR;
 	}
 
-	SHARED_DEFINE void Engine::loadModule(const std::string & name) {
+	SHARED void Engine::loadModule(const std::string & name) {
 		boost::filesystem::path m(name);
 		m.make_preferred();
 #ifdef _WIN32
@@ -69,7 +69,7 @@ namespace Omni {
 				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 				NULL, err, 0, (LPWSTR)&buff, 0, NULL);
 			std::shared_ptr<boost::remove_pointer<decltype(buff)>::type> p(buff, &::LocalFree);
-			throw ExceptionModuleNotFound(m.string(), convUCS2toUTF8(std::wstring(buff)));
+			throw ExceptionModuleNotFound(m.string(), toUTF8(std::wstring(buff)));
 		}
 
 		auto proc = reinterpret_cast<decltype(&getModule)>(::GetProcAddress(lib, fname.c_str()));
@@ -86,7 +86,7 @@ namespace Omni {
 		}
 	}
 
-	SHARED_DEFINE std::shared_ptr<Engine> getEngine() {
+	SHARED std::shared_ptr<Engine> getEngine() {
 		return std::make_shared<Engine>();
 	}
 }

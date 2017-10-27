@@ -29,7 +29,7 @@ namespace Omni {
 		//#endregion
 
 		//#region runtime states
-		std::list<Instance> instances;
+		std::list<std::shared_ptr<Instance>> instances;
 		//#endregion
 	};
 }

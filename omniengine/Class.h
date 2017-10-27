@@ -17,8 +17,7 @@ namespace Omni {
 		Class(std::shared_ptr<Engine> engine) : engine(engine) {};
 		virtual ~Class() {};
 
-		//virtual std::map<std::string, std::tuple<Key&, std::function<boost::any(const Parser::Tree&)>>> supportedOptions() {};
-		//virtual std::shared_ptr<Entity> createEntity(std::map<std::reference_wrapper<Key>, boost::any> options) {};
+		virtual std::shared_ptr<Entity> createEntity() { return nullptr;  };
 	protected:
 		std::shared_ptr<Engine> getEngine() { return engine; }
 	private:

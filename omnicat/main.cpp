@@ -17,18 +17,18 @@ int main(int argc, char *argv[], char *envp[])
 #endif
 {
 #ifdef USE_WIDECHAR_API
-	//::_setmode(_fileno(stdin), _O_U8TEXT);
-	//::_setmode(_fileno(stdout), _O_U8TEXT);
-	//::_setmode(_fileno(stderr), _O_U8TEXT);
+	//::_setmode(_fileno(stdin), _O_U16TEXT);
+	//::_setmode(_fileno(stdout), _O_U16TEXT);
+	//::_setmode(_fileno(stderr), _O_U16TEXT);
 #endif
 	try {
 		auto engine = Omni::getEngine();
 		engine->loadModule("omnimodule-base");
 		auto p = Omni::Parser::Parser(engine);
-		p.parse(convUCS2toUTF8(L"作你好"));
+		p.parse(toUTF8(L"TCP-LISTEN{x=10,y,z=100}"));
 	} catch (const Omni::Exception & exception) {
 #ifdef USE_WIDECHAR_API
-		std::wcerr << convUTF8toUCS2(std::string(exception.what())) << std::endl;
+		std::wcerr << fromUTF8(std::string(exception.what())) << std::endl;
 #else
 		std::cerr << exception.what() << std::endl;
 #endif
