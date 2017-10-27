@@ -1,0 +1,27 @@
+NAME
+
+	OPTIONS-LISTENER  -  options which a listener support
+
+SYNOPSIS
+
+	LISTENER { option = value, ... ( pipelines ) }
+	LISTENER { ref=#symbol, option = value, ... ( @symbol { established-socket-options } | pipelines ) }
+
+DESCRIPTION
+
+	OPTIONS
+
+		fork (default off)
+			Equivalent to max=-1. Establish unlimited number of connections. (Note: it doesn't fork sub-processes)
+
+		max=<count> (default 1)
+			Limits the number of concurrent child processes [int]. Use 0 to disable.
+
+		backlog=<count> (default 5)
+			Sets the backlog value passed with the listen() system call to <count> [int]. Default is 5.
+
+		pipelines (default STDIO)
+			How to handle the established connections.
+
+		ref=#symbol
+			This allows to configure established socket options. The inner socket options depends on LISTENER types.

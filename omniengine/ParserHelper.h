@@ -15,7 +15,7 @@ namespace Omni {
 			static constexpr bool value = false;
 		};
 
-		template<typename TargetT, bool Optional>
+		template<typename TargetT, bool Optional, bool Pipeline>
 		class HelperGroup : public Group {
 		public:
 			HelperGroup(TargetT & target) : target(target) {}
@@ -27,9 +27,11 @@ namespace Omni {
 				return target.groupOptionType(key);
 			}
 
-			virtual bool setOption(const std::string & key, const std::string & value) {
-				return target.setOption(key, value);
-			}
+			virtual bool hasPipeline() { return Pipeline; }
+
+			virtual bool setRawOption(const std::string & value) { return target.setRawOption(value); }
+			virtual bool setOption(const std::string & key) { return target.setOption(key); }
+			virtual bool setOption(const std::string & key, const std::string & value) { return target.setOption(key, value); }
 		private:
 			TargetT & target;
 		};

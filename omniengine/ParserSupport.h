@@ -8,7 +8,15 @@ namespace Omni {
 	class Registry;
 	class Entity;
 	namespace Parser {
-		enum class Type { NONE, FLAG, STRING, LIST, GROUP, OBJECT };
+		enum class Type {
+			NONE, // will fail the parser
+			FLAG,
+			STRING,
+			LIST,
+			GROUP,
+			OBJECT,
+			RAW
+		};
 
 		// [ option1 | option2 | option3 ]
 		class SHARED List {
@@ -18,13 +26,17 @@ namespace Omni {
 				virtual Type listOptionType() = 0;
 		};
 
-		// {flagoption,namedoption=type}
+		// {flagoption,namedoption=type,(pipline1 | pipeline2)}
 		class SHARED Group {
 			public:
 				SHARED_MEMBER virtual ~Group() = 0;
 				virtual bool isGroupOptional() = 0;
 				virtual Type groupOptionType(const std::string & key) = 0; // return NONE for unknown option
 
+				virtual bool hasPipeline() = 0; // pipeline always has type of Object
+
+				virtual bool setRawOption(const std::string & value) = 0;
+				virtual bool setOption(const std::string & key) = 0;
 				virtual bool setOption(const std::string & key, const std::string & value) = 0;
 		};
 

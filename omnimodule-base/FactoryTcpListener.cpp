@@ -8,9 +8,10 @@
 #include "EntityAcceptor.h"
 
 namespace Omni {
-	class ObjectAccepptor : public Parser::HelperObject<EntityAcceptor, Parser::HelperGroup<EntityAcceptor, true>> {
+	typedef Parser::HelperObject<EntityAcceptor, Parser::HelperGroup<EntityAcceptor, true, true>> ObjectAccepptorBase;
+	class ObjectAccepptor : public ObjectAccepptorBase {
 	public:
-		ObjectAccepptor(std::shared_ptr<EntityAcceptor> p) : Parser::HelperObject<EntityAcceptor, Parser::HelperGroup<EntityAcceptor, true>>(*p.get()), e(p) {}
+		ObjectAccepptor(std::shared_ptr<EntityAcceptor> p) : ObjectAccepptorBase(*p.get()), e(p) {}
 	private:
 		std::shared_ptr<EntityAcceptor> e;
 	};

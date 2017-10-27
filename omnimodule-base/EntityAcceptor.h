@@ -24,6 +24,12 @@ namespace Omni {
 			return Parser::Type::STRING;
 		}
 
+		bool setRawOption(const std::string & value) {
+			return true;
+		}
+		bool setOption(const std::string & key) {
+			return true;
+		}
 		bool setOption(const std::string & key, const std::string & value) {
 			return true;
 		}

@@ -1,0 +1,40 @@
+NAME
+
+	TCP-LISTENER Endpoint  -  listen a TCP port over ipv4 or ipv6 depending on resolver
+
+SYNOPSIS
+
+	TCP-LISTENER { [address]:port, option = value, ... ( pipelines ) }
+
+	TCP-LISTENER { [address]:port, ref=#symbol, option = value, ... ( @symbol { established-connection-options } | pipelines ) }
+
+DESCRIPTION
+
+		listen a tcp port over ipv4 or ipv6 family depending on resolver
+
+	OPTIONS
+
+		Useful options:
+			fork(LISTENER), reuseaddr(TCP)
+
+		Following option group are supported:
+			FD, SOCKET, LISTENER, TCP
+
+		[address]:port (default ":omnicat", which listens on "0.0.0.0:omnicat" of ipv4 and on "[::]:omnicat" of ipv6)
+			Equivalent to "resolver = RESOLVER{ address=${address}, service=${port} }". 
+
+		interfaces=[interfaces, ... ] (default none)
+			Equivalent to "resolver = RESOLVER{ interfaces=[*interfaces*] }". Restrict bind to the specified interface
+
+		established-connection-options option group:
+			FD, SOCKET, TCP-SOCKET
+
+		resolver=RESOLVER{ address=???, service=???, port=??? } (default TCP-RESOLVER, see TCP-RESOLVER)
+			Specify a RESOLVER to resolve the address and the port. By default it query the DNS to retrieve the address and port.
+
+		FD options:
+
+		SOCKET options:
+
+		LISTENER options:
+			fork, max, backlog, pipelines, ref
