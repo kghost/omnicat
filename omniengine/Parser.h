@@ -5,15 +5,9 @@
 #include "shared.h"
 
 namespace Omni {
-	class Engine;
-	class Entity;
+	class Registry;
 	namespace Parser {
-		class Parser {
-		public:
-			SHARED Parser(std::shared_ptr<Engine> engine);
-			SHARED std::shared_ptr<Entity> parse(const std::string & input);
-		private:
-			std::shared_ptr<Engine> engine;
-		};
+		class Object;
+		std::shared_ptr<Object> parse(std::shared_ptr<Registry> registry, const std::string & input);
 	}
 }

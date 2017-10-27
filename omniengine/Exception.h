@@ -34,10 +34,10 @@ namespace Omni {
 
 #define OMNI_INTERNAL_ERROR { throw ::Omni::ExceptionInternalError("Internal error. (@" __FILE__ ":"  BOOST_PP_STRINGIZE(__LINE__) ")"); }
 
-	class SHARED ExceptionClassNotFound : public Exception {
+	class SHARED ExceptionFactoryNotFound : public Exception {
 	public:
-		ExceptionClassNotFound(const std::string & name);
-		~ExceptionClassNotFound();
+		ExceptionFactoryNotFound(const std::string & name);
+		~ExceptionFactoryNotFound();
 	};
 
 	class SHARED ExceptionModuleNotFound : public Exception {

@@ -1,6 +1,6 @@
 #include "../common/header.h"
 
-#include "ClassTcpConnector.h"
+#include "FactoryTcpConnector.h"
 
 #include "EntityFileRecvSend.h"
 

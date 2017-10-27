@@ -3,16 +3,16 @@
 #include <memory>
 
 #include "../omniengine/Module.h"
-#include "ClassTcpConnector.h"
-#include "ClassTcpListener.h"
+#include "FactoryTcpConnector.h"
+#include "FactoryTcpListener.h"
 
 namespace Omni {
 	class BaseModule : public Module {
 	public:
-		virtual std::map<std::string, std::shared_ptr<Class>> getClasses(std::shared_ptr<Engine> engine) {
+		virtual std::map<std::string, std::shared_ptr<Factory>> getFactories(std::shared_ptr<Registry> registry) {
 			return {
-				{"TCP", std::make_shared<ClassTcpConnector>(engine)},
-				{ "TCP-LISTEN", std::make_shared<ClassTcpListener>(engine) }
+				{"TCP", std::make_shared<FactoryTcpConnector>(registry)},
+				{"TCP-LISTEN", std::make_shared<FactoryTcpListener>(registry)}
 			};
 		}
 	};

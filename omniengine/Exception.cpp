@@ -11,8 +11,8 @@ namespace Omni {
 	ExceptionInternalError::ExceptionInternalError(const char *msg) : Exception(msg) {}
 	ExceptionInternalError::~ExceptionInternalError() {}
 
-	ExceptionClassNotFound::ExceptionClassNotFound(const std::string & name) : Exception("Can't find class: " + name) {}
-	ExceptionClassNotFound::~ExceptionClassNotFound() {}
+	ExceptionFactoryNotFound::ExceptionFactoryNotFound(const std::string & name) : Exception("Can't find Factory: " + name) {}
+	ExceptionFactoryNotFound::~ExceptionFactoryNotFound() {}
 
 	ExceptionModuleNotFound::ExceptionModuleNotFound(const std::string & name, const std::string & reason) : Exception("Can't find module(" + name + "): " + reason) {}
 	ExceptionModuleNotFound::~ExceptionModuleNotFound() {}

@@ -156,8 +156,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Class.h" />
-    <ClInclude Include="Engine.h" />
+    <ClInclude Include="Factory.h" />
+    <ClInclude Include="Registry.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="Instance.h" />
@@ -170,7 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Registry.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="Instance.cpp" />

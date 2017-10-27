@@ -19,7 +19,7 @@ AC_PROG_INSTALL
 AC_PROG_CC(gcc)
 AC_PROG_CPP(g++)
 AC_PROG_CXX(g++)
-AX_CXX_COMPILE_STDCXX_14(noext)
+AX_CXX_COMPILE_STDCXX_17(noext)
 
 m4_ifndef([LT_SYS_DLSEARCH_PATH], [m4_fatal([You may need to install libltdl-dev])])
 m4_ifndef([LT_SYS_MODULE_EXT], [m4_fatal([You may need to install libltdl-dev])])

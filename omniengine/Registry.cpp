@@ -1,6 +1,6 @@
 #include "../common/header.h"
 
-#include "Engine.h"
+#include "Registry.h"
 
 #ifdef _WIN32
 #include <boost/type_traits/remove_pointer.hpp>
@@ -16,15 +16,39 @@
 #include <boost/filesystem.hpp>
 
 #include "Module.h"
+#include "Factory.h"
+
+extern "C" {
+	extern void fun(void*) noexcept;
+}
 
 namespace Omni {
-	Engine::Engine() {}
+	Registry::Registry() {}
+
+	SHARED std::shared_ptr<Factory> Registry::getFactory(const std::string & name) {
+		auto r = classes.find(name);
+		if (r != classes.end()) {
+			return r->second;
+		} else {
+			throw ExceptionFactoryNotFound(name);
+		}
+	}
+
+	SHARED std::shared_ptr<Parser::Object> Registry::createObject(const std::string & name) {
+		return getFactory(name)->createObject();
+	}
 
 #ifdef __linux__
+	template <class T> struct remove_noexcept{ typedef T type; };
+#ifdef __cpp_noexcept_function_type
+	template <class T, typename ...ARGS> struct remove_noexcept<T(ARGS...) noexcept>{ typedef T(type)(ARGS...); };
+#endif
 	// export the symbol so backtrace_symbols can retrieve the function name
 	EXPORT std::shared_ptr<Module> getModule() {
 		Dl_info info;
-		::dladdr(reinterpret_cast<boost::function_traits<decltype(::dladdr)>::arg1_type>(&getModule), &info);
+		::dladdr(reinterpret_cast<typename boost::function_traits<
+			remove_noexcept<decltype(::fun)>::type
+			>::arg1_type>(&getModule), &info);
 		throw std::string(info.dli_sname);
 	}
 #elif _WIN32
@@ -42,7 +66,7 @@ namespace Omni {
 		OMNI_INTERNAL_ERROR;
 	}
 
-	SHARED void Engine::loadModule(const std::string & name) {
+	SHARED void Registry::loadModule(const std::string & name) {
 		boost::filesystem::path m(name);
 		m.make_preferred();
 #ifdef _WIN32
@@ -79,14 +103,14 @@ namespace Omni {
 		if (proc == nullptr) throw ExceptionModuleNotFound(m.string(), "can't locate entry function");
 		auto module = proc();
 
-		for (auto entry : module->getClasses(shared_from_this())) {
+		for (auto entry : module->getFactories(shared_from_this())) {
 			// XXX: check for already exists entry
 			auto & i = classes[entry.first];
 			i = entry.second;
 		}
 	}
 
-	SHARED std::shared_ptr<Engine> getEngine() {
-		return std::make_shared<Engine>();
+	SHARED std::shared_ptr<Registry> getRegistry() {
+		return std::make_shared<Registry>();
 	}
 }

@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ClassTcpConnector.h">
+    <ClInclude Include="FactoryTcpConnector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ClassTcpListener.h">
+    <ClInclude Include="FactoryTcpListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EntityFileRecvSend.h">
@@ -38,10 +38,10 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ClassTcpConnector.cpp">
+    <ClCompile Include="FactoryTcpConnector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ClassTcpListener.cpp">
+    <ClCompile Include="FactoryTcpListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Module.cpp">

@@ -155,8 +155,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ClassTcpConnector.h" />
-    <ClInclude Include="ClassTcpListener.h" />
+    <ClInclude Include="FactoryTcpConnector.h" />
+    <ClInclude Include="FactoryTcpListener.h" />
     <ClInclude Include="EntityTcpConnector.h" />
     <ClInclude Include="EntityAcceptor.h" />
     <ClInclude Include="EntityFileRecvSend.h" />
@@ -164,8 +164,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="ClassTcpConnector.cpp" />
-    <ClCompile Include="ClassTcpListener.cpp" />
+    <ClCompile Include="FactoryTcpConnector.cpp" />
+    <ClCompile Include="FactoryTcpListener.cpp" />
     <ClCompile Include="EntityTcpConnector.cpp" />
     <ClCompile Include="EntityAcceptor.cpp" />
     <ClCompile Include="EntityFileRecvSend.cpp" />
