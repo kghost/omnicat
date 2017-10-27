@@ -34,39 +34,25 @@
 
 namespace Omni {
 	namespace Parser {
-		template <size_t n, typename... T>
-		typename std::enable_if<(n >= sizeof...(T))>::type
-			print_tuple(std::ostream&, const std::tuple<T...>&) {}
-
-		template <size_t n, typename... T>
-		typename std::enable_if<(n < sizeof...(T))>::type
-			print_tuple(std::ostream& os, const std::tuple<T...>& tup) {
-			if (n != 0)
-				os << ", ";
-			os << std::get<n>(tup);
-			print_tuple<n + 1>(os, tup);
-		}
-
-		template <typename... T>
-		std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {
-			os << "[";
-			print_tuple<0>(os, tup);
-			return os << "]";
+		template <typename Ostream, typename T>
+		Ostream& operator<<(Ostream& os, T * o) {
+			os << typeid(*o).name() << "#" << reinterpret_cast<std::uintptr_t>(o);
+			return os;
 		}
 
 		template <typename Ostream, typename T>
-		Ostream& operator<<(Ostream& os, const T & o) {
-			os << "Obj@";
+		Ostream& operator<<(Ostream& os, T & o) {
+			os << typeid(o).name() << "@" << reinterpret_cast<std::uintptr_t>(&o);
 			return os;
 		}
 
 		class Placeholder {};
-		class Options {};
 
-		template <typename Iterator>
-		class gm : public boost::spirit::qi::grammar<Iterator, std::shared_ptr<Object>()> {
+		class grammar : public boost::spirit::qi::grammar<boost::u8_to_u32_iterator<std::string::const_iterator>, std::shared_ptr<Object>()> {
 		public:
-			gm(std::shared_ptr<Registry> registry) : gm::base_type(result), registry(registry) {
+			typedef typename boost::u8_to_u32_iterator<std::string::const_iterator> Iterator;
+
+			grammar(std::shared_ptr<Registry> registry) : grammar::base_type(result), registry(registry) {
 				boost::spirit::qi::debug(str);
 				boost::spirit::qi::debug(option_value);
 				boost::spirit::qi::debug(object);
@@ -119,49 +105,37 @@ namespace Omni {
 				)*/
 						"option_value"
 			};
-			boost::spirit::qi::rule<Iterator, boost::spirit::qi::locals<std::string, std::string>> option(std::shared_ptr<Group> p1) {
-				auto rule = boost::spirit::qi::rule<Iterator, boost::spirit::qi::locals<std::string, std::string>>{
-					(str[boost::spirit::_a = boost::spirit::_1] >> -(boost::spirit::lit('=') >>
-						lazy(
-							boost::phoenix::bind([this, p1](const std::string & v) -> boost::spirit::qi::rule<Iterator, std::string()> {
-								return str;
-							}, boost::spirit::_a)
-						)[boost::spirit::_b = boost::spirit::_1]
-					))[
-						boost::spirit::_pass = boost::phoenix::bind([this, p1](const std::string & key, const std::string & val) -> bool {
-							return p1->setStringOption(key, val);
-						}, boost::spirit::_a, boost::spirit::_b)
-					],
-					"option"
-				};
-				boost::spirit::qi::debug(rule);
-				return rule;
-			}
-			boost::spirit::qi::rule<Iterator> list(std::shared_ptr<List> p1) {
-				auto rule = boost::spirit::qi::rule<Iterator>{
-					boost::spirit::lit('[') >> (str % boost::spirit::lit('|')) >> boost::spirit::lit(']'),
-					"list"
-				};
-				boost::spirit::qi::debug(rule);
-				return rule;
+			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<Group>), boost::spirit::qi::locals<std::string, std::string>> option = {
+				(str[boost::spirit::_a = boost::spirit::_1] >> -(boost::spirit::lit('=') >>
+					lazy(
+						boost::phoenix::bind([this](std::shared_ptr<Group> p1, const std::string & v) -> boost::spirit::qi::rule<Iterator, std::string()> {
+							return str;
+						}, boost::spirit::_r1, boost::spirit::_a)
+					)[boost::spirit::_b = boost::spirit::_1]
+				))[
+					boost::spirit::_pass = boost::phoenix::bind([this](std::shared_ptr<Group> p1, const std::string & key, const std::string & val) -> bool {
+						return p1->setOption(key, val);
+					}, boost::spirit::_r1, boost::spirit::_a, boost::spirit::_b)
+				],
+				"option"
 			};
-			boost::spirit::qi::rule<Iterator> group(std::shared_ptr<Group> p1) {
-				auto rule = boost::spirit::qi::rule<Iterator>{
-					boost::spirit::lit('{') >> (option(p1) % boost::spirit::lit(',')) >> boost::spirit::lit('}'),
-					"group"
-				};
-				boost::spirit::qi::debug(rule);
-				return rule;
-			}
+			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<List>)> list = {
+				boost::spirit::lit('[') >> (str % boost::spirit::lit('|')) >> boost::spirit::lit(']'),
+				"list"
+			};
+			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<Group>)> group = {
+				boost::spirit::lit('{') >> (option(boost::spirit::_r1) % boost::spirit::lit(',')) >> boost::spirit::lit('}'),
+				"group"
+			};
 			boost::spirit::qi::rule<Iterator, std::shared_ptr<Object>(), boost::spirit::qi::locals<std::shared_ptr<Object>>> object = {
 				(str[
-					boost::spirit::_pass = boost::phoenix::bind([this](const std::string & p1, std::shared_ptr<Object> a) -> bool {
+					boost::spirit::_pass = boost::phoenix::bind([this](const std::string & p1, std::shared_ptr<Object> & a) -> bool {
 						return bool(a = createObject(registry, p1));
 					}, boost::spirit::_1, boost::spirit::_a)
 				] >> lazy(
-					boost::phoenix::bind([this](std::shared_ptr<Object> a) -> boost::spirit::qi::rule<Iterator> {
-						if (a->hasGroup()) return group(a->getGroup());
-						else if (a->hasList()) return list(a->getList());
+					boost::phoenix::bind([this](std::shared_ptr<Object> a) -> boost::spirit::qi::rule<Iterator, void()> {
+						if (a->hasGroup()) return group(boost::phoenix::val(a->getGroup()));
+						else if (a->hasList()) return list(boost::phoenix::val(a->getList()));
 						else return boost::spirit::eps;
 					}, boost::spirit::_a)
 				))[boost::spirit::_val = boost::spirit::_a],
@@ -176,7 +150,7 @@ namespace Omni {
 		SHARED std::shared_ptr<Object> parse(std::shared_ptr<Registry> registry, const std::string & input) {
 			boost::u8_to_u32_iterator<std::string::const_iterator> begin(input.begin()), end(input.end());
 			std::shared_ptr<Object> v;
-			if (boost::spirit::qi::parse(begin, end, gm<decltype(begin)>(registry), v)) {
+			if (boost::spirit::qi::parse(begin, end, grammar(registry), v)) {
 				return v;
 			} else {
 				return nullptr;

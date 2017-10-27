@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "omnimodule-base", "omnimodu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcxitems", "{DE0F8BC1-B73F-486B-8321-CB062910320D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "omniparser", "omniparser\omniparser.vcxproj", "{6FF32890-040C-40ED-BEA4-7FA15F1CFC14}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "omnicat", "omnicat\omnicat.vcxproj", "{14539137-AF42-4075-94E2-B8811C9B35B2}"
 EndProject
 Global
@@ -37,14 +35,6 @@ Global
 		{770716E0-69CE-4E7B-B2B1-437FD9BC5D39}.Release|x64.Build.0 = Release|x64
 		{770716E0-69CE-4E7B-B2B1-437FD9BC5D39}.Release|x86.ActiveCfg = Release|Win32
 		{770716E0-69CE-4E7B-B2B1-437FD9BC5D39}.Release|x86.Build.0 = Release|Win32
-		{6FF32890-040C-40ED-BEA4-7FA15F1CFC14}.Debug|x64.ActiveCfg = Debug|x64
-		{6FF32890-040C-40ED-BEA4-7FA15F1CFC14}.Debug|x64.Build.0 = Debug|x64
-		{6FF32890-040C-40ED-BEA4-7FA15F1CFC14}.Debug|x86.ActiveCfg = Debug|Win32
-		{6FF32890-040C-40ED-BEA4-7FA15F1CFC14}.Debug|x86.Build.0 = Debug|Win32
-		{6FF32890-040C-40ED-BEA4-7FA15F1CFC14}.Release|x64.ActiveCfg = Release|x64
-		{6FF32890-040C-40ED-BEA4-7FA15F1CFC14}.Release|x64.Build.0 = Release|x64
-		{6FF32890-040C-40ED-BEA4-7FA15F1CFC14}.Release|x86.ActiveCfg = Release|Win32
-		{6FF32890-040C-40ED-BEA4-7FA15F1CFC14}.Release|x86.Build.0 = Release|Win32
 		{14539137-AF42-4075-94E2-B8811C9B35B2}.Debug|x64.ActiveCfg = Debug|x64
 		{14539137-AF42-4075-94E2-B8811C9B35B2}.Debug|x64.Build.0 = Debug|x64
 		{14539137-AF42-4075-94E2-B8811C9B35B2}.Debug|x86.ActiveCfg = Debug|Win32

@@ -98,7 +98,6 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;OMNIENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,6 +156,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Factory.h" />
+    <ClInclude Include="ParserHelper.h" />
+    <ClInclude Include="ParserSupport.h" />
     <ClInclude Include="Registry.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Exception.h" />
@@ -170,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="ParserSupport.cpp" />
     <ClCompile Include="Registry.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Exception.cpp" />

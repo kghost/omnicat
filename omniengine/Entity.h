@@ -13,10 +13,10 @@ namespace Omni {
 	class Instance;
 	class SHARED Entity {
 		public:
-			SHARED virtual bool isPassive() = 0;
-			SHARED virtual void prepare();
+			SHARED_MEMBER virtual bool isPassive() = 0;
+			SHARED_MEMBER virtual void prepare() = 0;
 
-			SHARED virtual void createInstance(std::function<int()> callback);
-			SHARED virtual void passiveCreateInstance(std::map<Key, boost::any> hints, std::function<int()> callback);
+			SHARED_MEMBER virtual void createInstance(std::function<int()> callback);
+			SHARED_MEMBER virtual void passiveCreateInstance(std::map<Key, boost::any> hints, std::function<int()> callback);
 	};
 }
