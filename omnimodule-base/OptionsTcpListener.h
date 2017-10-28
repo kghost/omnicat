@@ -9,12 +9,13 @@ namespace Omni {
 	template<typename OwnerT, typename SocketT>
 	class OptionsTcpListener : public OptionsTemplate<OptionsTcpListener<OwnerT, SocketT>, SocketT> {
 	public:
+		typedef OptionsTemplate<OptionsTcpListener<OwnerT, SocketT>, SocketT> ParentT;
 		OptionsTcpListener(OwnerT& owner) : owner(owner) {}
-		DefineT define = {
+		typename ParentT::DefineT define = {
 			{
 				"", {
-					Parser::Type::RAW,{"[address]:port", "Equivalent to \"bind = ${address}:${port}\"", ":omnicat"},
-					RawT([this](const std::string & value, int) -> SetT {
+					Parser::Type::RAW, {"[address]:port", "Equivalent to \"bind = ${address}:${port}\"", ":omnicat"},
+					typename ParentT::RawT([this](const std::string & value, int) -> typename ParentT::SetT {
 						auto ws = fromUTF8(value);
 						auto i = ws.find_last_of(':');
 						if (i == std::string::npos) throw ExceptionInvalidArgument("malformed listening address or unknown option: " + value);
@@ -32,20 +33,20 @@ namespace Omni {
 			},
 			{
 				"bind", {
-					Parser::Type::RAW,{"[address]:port", "Equivalent to \"resolver = RESOLVER{ address = ${address}, service = ${port} }\""},
-					RawT([this](const std::string & value, int) -> SetT {
+					Parser::Type::STRING, {"[address]:port", "Equivalent to \"resolver = RESOLVER{ address = ${address}, service = ${port} }\""},
+					typename ParentT::RawT([this](const std::string & value, int) -> typename ParentT::SetT {
 						return [](SocketT& sock) -> void {};
 					})
 				}
 			},
 			{
 				"resolver", {
-					Parser::Type::RAW,{
+					Parser::Type::STRING, {
 						"RESOLVER{ family = [ ipv6, ipv4 ], address = ???, service = ???, port = ??? }",
 						"Specify a RESOLVER to resolve the address and the port. By default it query the DNS to retrieve the address and port.",
 						"RESOLVER{ family = [ ipv6, ipv4 ], address = \"\", service = omnicat }",
 					},
-					RawT([this](const std::string & value, int) -> SetT {
+					typename ParentT::RawT([this](const std::string & value, int) -> typename ParentT::SetT {
 						return [](SocketT& sock) -> void {};
 					})
 				}

@@ -4,6 +4,10 @@ AC_CONFIG_MACRO_DIRS([m4])
 
 AC_INIT(omnicat, 0.1.0)
 dnl AC_CONFIG_SRCDIR([src/main.cpp])
+
+AX_IS_RELEASE([git-directory])
+AX_CHECK_ENABLE_DEBUG([yes])
+
 LT_INIT
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
@@ -20,9 +24,6 @@ AC_PROG_CC(gcc)
 AC_PROG_CPP(g++)
 AC_PROG_CXX(g++)
 AX_CXX_COMPILE_STDCXX_17(noext)
-
-AX_IS_RELEASE([git-directory])
-AX_CHECK_ENABLE_DEBUG()
 
 m4_ifndef([LT_SYS_DLSEARCH_PATH], [m4_fatal([You may need to install libltdl-dev])])
 m4_ifndef([LT_SYS_MODULE_EXT], [m4_fatal([You may need to install libltdl-dev])])

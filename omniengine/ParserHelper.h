@@ -77,7 +77,7 @@ namespace Omni {
 		class EntityWrapper : public EntityStore<TargetT>, public HelperType {
 		public:
 			template<typename ...Args>
-			explicit EntityWrapper(Args && ... args) : EntityStore<TargetT>(std::forward<Args>(args)...), HelperType(*result) {}
+			explicit EntityWrapper(Args && ... args) : EntityStore<TargetT>(std::forward<Args>(args)...), HelperType(*EntityStore<TargetT>::result) {}
 		};
 	}
 }

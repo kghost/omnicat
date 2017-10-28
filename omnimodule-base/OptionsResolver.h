@@ -6,12 +6,13 @@ namespace Omni {
 	template<typename OwnerT>
 	class OptionsResolver: public OptionsTemplate<OptionsResolver<OwnerT>> {
 	public:
+		typedef OptionsTemplate<OptionsResolver<OwnerT>> ParentT;
 		OptionsResolver(OwnerT& owner) : owner(owner) {}
-		DefineT define = {
+		typename ParentT::DefineT define = {
 			{
 				"family", {
 					Parser::Type::LIST,{"<address>", "The address to resolve", "localhost"},
-					FlagT([this]() -> SetT {
+					typename ParentT::FlagT([this]() -> typename ParentT::SetT {
 						return {};
 					})
 				}
@@ -19,7 +20,7 @@ namespace Omni {
 			{
 				"address", {
 					Parser::Type::STRING, {"<address>", "The address to resolve", "localhost"},
-					StringT([this](const std::string & value) -> SetT {
+					typename ParentT::StringT([this](const std::string & value) -> typename ParentT::SetT {
 						owner.address = value;
 						return {};
 					})
@@ -28,7 +29,7 @@ namespace Omni {
 			{
 				"service", {
 					Parser::Type::STRING, {"<string>", "The service to resolve", "omnicat"},
-					StringT([this](const std::string & value) -> SetT {
+					typename ParentT::StringT([this](const std::string & value) -> typename ParentT::SetT {
 						owner.service = value;
 						return {};
 					})
@@ -37,7 +38,7 @@ namespace Omni {
 			{
 				"port", {
 					Parser::Type::STRING, {"<number>", "Manually set the port number, skip resolve service"},
-					StringT([this](const std::string & value) -> SetT {
+					typename ParentT::StringT([this](const std::string & value) -> typename ParentT::SetT {
 						owner.port = std::stoi(value);
 						return {};
 					})

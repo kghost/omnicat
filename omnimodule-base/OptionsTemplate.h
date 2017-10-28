@@ -19,40 +19,40 @@ namespace Omni {
 		OptionsTemplateImpl(Args && ... args) : Base(std::forward<Args>(args)...) {}
 
 		std::optional<Parser::Type> optionType(const std::string & key) {
-			auto i = define.find(key);
-			if (i == define.end()) return {};
+			auto i = Base::define.find(key);
+			if (i == Base::define.end()) return {};
 			else return std::get<0>(i->second);
 		}
 
 		bool setRawOption(const std::string & value) {
-			auto i = define.find("");
-			if (i == define.end()) return false;
+			auto i = Base::define.find("");
+			if (i == Base::define.end()) return false;
 			assert(std::get<0>(i->second) == Parser::Type::RAW);
-			std::optional<DelayedT>& delayed = boost::get<RawT>(std::get<2>(i->second))(value, 0);
+			std::optional<typename Base::DelayedT> delayed = boost::get<typename Base::RawT>(std::get<2>(i->second))(value, 0);
 			if (delayed) options.push_back(delayed.value());
 			return true;
 		}
 
 		bool setOption(const std::string & key) {
-			auto i = define.find(key);
-			if (i == define.end()) return {};
+			auto i = Base::define.find(key);
+			if (i == Base::define.end()) return {};
 			assert(std::get<0>(i->second) == Parser::Type::FLAG);
-			std::optional<DelayedT>& delayed = boost::get<FlagT>(std::get<2>(i->second))();
+			std::optional<typename Base::DelayedT> delayed = boost::get<typename Base::FlagT>(std::get<2>(i->second))();
 			if (delayed) options.push_back(delayed.value());
 			return true;
 		}
 
 		bool setOption(const std::string & key, const std::string & value) {
-			auto i = define.find(key);
-			if (i == define.end()) return false;
+			auto i = Base::define.find(key);
+			if (i == Base::define.end()) return false;
 			assert(std::get<0>(i->second) == Parser::Type::STRING);
-			std::optional<DelayedT>& delayed = boost::get<StringT>(std::get<2>(i->second))(value);
+			std::optional<typename Base::DelayedT> delayed = boost::get<typename Base::StringT>(std::get<2>(i->second))(value);
 			if (delayed) options.push_back(delayed.value());
 			return true;
 		}
 
-		void execute(TargetT&... target) {
-			for (auto o : options) o(target);
+		void execute(TargetT && ... target) {
+			for (auto o : options) o(std::forward<TargetT>(target)...);
 		}
 	protected:
 		std::vector<typename Base::DelayedT> options;
@@ -62,7 +62,7 @@ namespace Omni {
 	public:
 		std::string format;
 		std::string description;
-		std::optional<std::string> default;
+		std::optional<std::string> defv;
 	};
 
 	template <typename OptionType, typename ...TargetT>
