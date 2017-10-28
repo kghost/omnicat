@@ -17,8 +17,7 @@ namespace Omni {
 	//private:
 	//	BOOST_MOVABLE_BUT_NOT_COPYABLE(OptionsTemplate)
 	public:
-		typedef typename OptionsTemplate<OptionType, TargetT> base_type;
-		typedef typename TargetT type;
+		typedef TargetT type;
 
 		typedef std::function<void(TargetT&)> FlagT;
 		typedef std::function<std::function<void(TargetT&)>(const std::string &)> StringT;

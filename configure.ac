@@ -21,6 +21,9 @@ AC_PROG_CPP(g++)
 AC_PROG_CXX(g++)
 AX_CXX_COMPILE_STDCXX_17(noext)
 
+AX_IS_RELEASE([git-directory])
+AX_CHECK_ENABLE_DEBUG()
+
 m4_ifndef([LT_SYS_DLSEARCH_PATH], [m4_fatal([You may need to install libltdl-dev])])
 m4_ifndef([LT_SYS_MODULE_EXT], [m4_fatal([You may need to install libltdl-dev])])
 
@@ -60,4 +63,4 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 
 dnl Checks for library functions.
 
-AC_OUTPUT([Makefile omniengine/Makefile omnimodule-base/Makefile omniparser/Makefile omnicat/Makefile])
+AC_OUTPUT([Makefile omniengine/Makefile omnimodule-base/Makefile omnicat/Makefile])

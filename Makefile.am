@@ -1,1 +1,1 @@
-SUBDIRS = omniengine omnimodule-base omniparser omnicat
+SUBDIRS = omniengine omnimodule-base omnicat

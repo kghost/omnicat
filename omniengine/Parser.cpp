@@ -11,7 +11,7 @@
 #define BOOST_SPIRIT_USE_PHOENIX_V3
 #define BOOST_SPIRIT_UNICODE // We'll use unicode (UTF8) all throughout
 #include <boost/regex/pending/unicode_iterator.hpp>
-#ifdef _DEBUG
+#ifndef NDEBUG
 #include "utilities.h"
 #define BOOST_SPIRIT_DEBUG
 //#define BOOST_SPIRIT_DEBUG_OUT Omni::utf8cout
@@ -53,7 +53,7 @@ namespace Omni {
 			typedef typename boost::u8_to_u32_iterator<std::string::const_iterator> Iterator;
 
 			grammar(std::shared_ptr<Registry> registry) : grammar::base_type(result), registry(registry) {
-#ifdef _DEBUG
+#ifndef NDEBUG
 				boost::spirit::qi::debug(str);
 				boost::spirit::qi::debug(option_value);
 				boost::spirit::qi::debug(option);

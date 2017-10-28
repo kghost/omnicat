@@ -53,7 +53,7 @@ namespace Omni {
 	EXPORT std::shared_ptr<Module> getModule() {
 		Dl_info info;
 		::dladdr(reinterpret_cast<typename boost::function_traits<
-			remove_noexcept<decltype(::fun)>::type
+			remove_noexcept<decltype(::dladdr)>::type
 			>::arg1_type>(&getModule), &info);
 		throw std::string(info.dli_sname);
 	}

@@ -9,6 +9,7 @@ namespace Omni {
 	class Registry;
 	class Entity;
 	namespace Parser {
+		template<typename TargetT>
 		class NoGroup {
 		public:
 			NoGroup() = delete;
