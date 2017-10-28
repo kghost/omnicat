@@ -1,10 +1,12 @@
 #pragma once
 
-#include <list>
+#include <boost/fusion/include/list.hpp>
 
 #include "../omniengine/ParserSupport.h"
 #include "../omniengine/Entity.h"
 #include "../omniengine/Resolver.h"
+#include "OptionsFileDescriptor.h"
+#include "OptionsSocketListener.h"
 
 namespace boost {
 	namespace asio {
@@ -18,23 +20,20 @@ namespace Omni {
 		virtual bool isPassive() { return false; };
 		virtual void prepare() {}
 
-		virtual void createInstance(boost::asio::io_service & io_service, std::function<void(std::shared_ptr<Instance>)> handler);
+		virtual void createInstance(std::function<int()> callback);
+		virtual void passiveCreateInstance(std::map<Key, boost::any> hints, std::function<int()> callback);
 
-		Parser::Type groupOptionType(const std::string & key) {
-			return Parser::Type::STRING;
-		}
-
-		bool setRawOption(const std::string & value) {
-			return true;
-		}
-		bool setOption(const std::string & key) {
-			return true;
-		}
-		bool setOption(const std::string & key, const std::string & value) {
-			return true;
-		}
+		Parser::Type groupOptionType(const std::string & key);
+		bool setRawOption(const std::string & value);
+		bool setOption(const std::string & key);
+		bool setOption(const std::string & key, const std::string & value);
 	private:
-		//#region static configure fields before start
+		//#begin-region static configure fields before start
+
+		boost::fusion::list<
+			OptionsSocketListener,
+			OptionsFileDescriptor
+		> options;
 
 		std::shared_ptr<Resolver> resolver;
 
@@ -42,10 +41,10 @@ namespace Omni {
 		// Acceptor(SocketRecvSend - <inner>) 
 		std::shared_ptr<Entity> inner;
 
-		//#endregion
+		//#end-region
 
-		//#region runtime states
+		//#begin-region runtime states
 		std::list<std::shared_ptr<Instance>> instances;
-		//#endregion
+		//#end-region
 	};
 }

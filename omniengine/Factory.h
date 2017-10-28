@@ -3,7 +3,7 @@
 #include <memory>
 #include <map>
 #include <functional>
-#include <boost/any.hpp>
+#include <boost/core/noncopyable.hpp>
 
 namespace Omni {
 	namespace Parser {
@@ -12,7 +12,7 @@ namespace Omni {
 	class Registry;
 	class Entity;
 	class Key;
-	class Factory {
+	class Factory : private boost::noncopyable {
 	public:
 		Factory(std::shared_ptr<Registry> registry) : registry(registry) {};
 		virtual ~Factory() {};

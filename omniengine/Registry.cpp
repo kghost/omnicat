@@ -18,14 +18,20 @@
 #include "Module.h"
 #include "Factory.h"
 
-extern "C" {
-	extern void fun(void*) noexcept;
-}
-
 namespace Omni {
-	Registry::Registry() {}
+	Registry::~Registry() {}
 
-	SHARED std::shared_ptr<Factory> Registry::getFactory(const std::string & name) {
+	class RegistryImpl : public Registry, public std::enable_shared_from_this<Registry> {
+	public:
+		RegistryImpl() {}
+		virtual std::shared_ptr<Factory> getFactory(const std::string & name);
+		virtual std::shared_ptr<Parser::Object> createObject(const std::string & name);
+		virtual void loadModule(const std::string & name);
+	private:
+		std::map<std::string, std::shared_ptr<Factory>> classes;
+	};
+
+	std::shared_ptr<Factory> RegistryImpl::getFactory(const std::string & name) {
 		auto r = classes.find(name);
 		if (r != classes.end()) {
 			return r->second;
@@ -34,7 +40,7 @@ namespace Omni {
 		}
 	}
 
-	SHARED std::shared_ptr<Parser::Object> Registry::createObject(const std::string & name) {
+	std::shared_ptr<Parser::Object> RegistryImpl::createObject(const std::string & name) {
 		return getFactory(name)->createObject();
 	}
 
@@ -66,7 +72,7 @@ namespace Omni {
 		OMNI_INTERNAL_ERROR;
 	}
 
-	SHARED void Registry::loadModule(const std::string & name) {
+	void RegistryImpl::loadModule(const std::string & name) {
 		boost::filesystem::path m(name);
 		m.make_preferred();
 #ifdef _WIN32
@@ -111,6 +117,6 @@ namespace Omni {
 	}
 
 	SHARED std::shared_ptr<Registry> getRegistry() {
-		return std::make_shared<Registry>();
+		return std::make_shared<RegistryImpl>();
 	}
 }

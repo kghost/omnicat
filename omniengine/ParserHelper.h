@@ -39,8 +39,8 @@ namespace Omni {
 		template<typename TargetT>
 		class NoList : public List {
 		public:
-			NoList(TargetT) { OMNI_INTERNAL_ERROR; }
-			virtual ~NoList() { OMNI_INTERNAL_ERROR; }
+			NoList(TargetT&) { OMNI_INTERNAL_ERROR; }
+			virtual ~NoList() {}
 			static constexpr bool value = false;
 			virtual bool isListOptional() { OMNI_INTERNAL_ERROR; }
 			virtual Type listOptionType() { OMNI_INTERNAL_ERROR; }

@@ -25,7 +25,7 @@ int main(int argc, char *argv[], char *envp[])
 		auto registry = Omni::getRegistry();
 		registry->loadModule("omnimodule-base");
 		auto p = Omni::Parser::parse(registry, toUTF8(
-			L"TCP-LISTEN{x=10,z=100(a | b)}"
+			L"TCP-LISTEN{cloexec,(a | b)}"
 		));
 	} catch (const Omni::Exception & exception) {
 #ifdef USE_WIDECHAR_API

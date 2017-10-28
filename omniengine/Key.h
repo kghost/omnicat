@@ -2,15 +2,13 @@
 
 #include <string>
 #include <boost/optional/optional.hpp>
+#include <boost/core/noncopyable.hpp>
 
 namespace Omni {
-	class Key {
+	class Key : private boost::noncopyable {
 	public:
 		Key() : symbol() {}
 		Key(std::string symbol) : symbol(symbol) {}
-		Key(const Key &) = delete;
-		Key & operator=(const Key &) = delete;
-
 		bool operator==(const Key & that) { return this == &that; }
 		bool operator<(const Key & that) { return this < &that; }
 	private:

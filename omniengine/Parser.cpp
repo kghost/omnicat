@@ -119,16 +119,16 @@ namespace Omni {
 					boost::phoenix::bind([this](std::shared_ptr<Group> r1, const std::string & a) -> boost::spirit::qi::rule<Iterator> {
 						switch (r1->groupOptionType(a)) {
 							case Type::FLAG:
-								r1->setOption(a);
-								return boost::spirit::eps;
+								if (r1->setOption(a)) return boost::spirit::eps;
+								else  return !boost::spirit::eps;
 							case Type::GROUP:
 							case Type::LIST:
 							case Type::OBJECT:
 							case Type::STRING:
 								return option_value(boost::phoenix::val(r1), boost::phoenix::val(a));
 							case Type::RAW:
-								r1->setRawOption(a);
-								return boost::spirit::eps;
+								if (r1->setRawOption(a)) return boost::spirit::eps;
+								else return !boost::spirit::eps;
 							default:
 								return !boost::spirit::eps;
 						}

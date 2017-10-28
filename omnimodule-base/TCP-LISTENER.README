@@ -17,24 +17,28 @@ DESCRIPTION
 		Useful options:
 			fork(LISTENER), reuseaddr(TCP)
 
-		Following option group are supported:
-			FD, SOCKET, LISTENER, TCP
+		Following option groups are supported:
+			FD, LISTENER, SOCKET, SOCKET-LISTENER, TCP, TCP-LISTENER
 
-		[address]:port (default ":omnicat", which listens on "0.0.0.0:omnicat" of ipv4 and on "[::]:omnicat" of ipv6)
-			Equivalent to "resolver = RESOLVER{ address=${address}, service=${port} }". 
+		established connection option groups:
+			FD, SOCKET, SOCKET-ESTABLISTHED, SOCKET-ACCEPTED, TCP, TCP-ESTABLISTHED, TCP-ACCEPTED
 
-		interfaces=[interfaces, ... ] (default none)
-			Equivalent to "resolver = RESOLVER{ interfaces=[*interfaces*] }". Restrict bind to the specified interface
+		TCP-LISTENER options:
+			[address]:port (default ":omnicat", which listens on "0.0.0.0:omnicat" of ipv4 and on "[::]:omnicat" of ipv6)
+				Equivalent to "resolver = RESOLVER{ address=${address}, service=${port} }". 
 
-		established-connection-options option group:
-			FD, SOCKET, TCP-SOCKET
+			interfaces=[interfaces, ... ] (default none)
+				Equivalent to "resolver = RESOLVER{ interfaces=[*interfaces*] }". Restrict bind to the specified interface
 
-		resolver=RESOLVER{ address=???, service=???, port=??? } (default TCP-RESOLVER, see TCP-RESOLVER)
-			Specify a RESOLVER to resolve the address and the port. By default it query the DNS to retrieve the address and port.
+			family=[ family1, family2 ] (default [ ipv6, ipv4 ])
+				Specify the address family and the order to the RESOLVER. NOTE: use TCP6-LISTENER or TCP4-LISTENER for ipv6 or ipv4.
 
-		FD options:
+			resolver=RESOLVER{ family=[ ipv6, ipv4 ], address=???, service=???, port=??? } (default TCP-RESOLVER, see TCP-RESOLVER)
+				Specify a RESOLVER to resolve the address and the port. By default it query the DNS to retrieve the address and port.
 
-		SOCKET options:
+		FD options (see OPTIONS-FD):
+
+		SOCKET options (see OPTIONS-SOCKET):
 
 		LISTENER options:
 			fork, max, backlog, pipelines, ref

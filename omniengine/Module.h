@@ -2,11 +2,12 @@
 
 #include <map>
 #include <memory>
+#include <boost/core/noncopyable.hpp>
 
 namespace Omni {
 	class Registry;
 	class Factory;
-	class Module {
+	class Module : private boost::noncopyable {
 	public:
 		virtual ~Module() {};
 

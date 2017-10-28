@@ -161,6 +161,9 @@
     <ClInclude Include="EntityAcceptor.h" />
     <ClInclude Include="EntityFileRecvSend.h" />
     <ClInclude Include="InstanceAcceptor.h" />
+    <ClInclude Include="OptionsFileDescriptor.h" />
+    <ClInclude Include="OptionsSocketListener.h" />
+    <ClInclude Include="OptionsTemplate.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -171,6 +174,8 @@
     <ClCompile Include="EntityFileRecvSend.cpp" />
     <ClCompile Include="InstanceAcceptor.cpp" />
     <ClCompile Include="Module.cpp" />
+    <ClCompile Include="OptionsFileDescriptor.cpp" />
+    <ClCompile Include="OptionsSocketListener.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\omniengine\omniengine.vcxproj">
