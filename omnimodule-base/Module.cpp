@@ -3,16 +3,17 @@
 #include <memory>
 
 #include "../omniengine/Module.h"
-#include "FactoryTcpConnector.h"
 #include "FactoryTcpListener.h"
+#include "FactoryTcpResolver.h"
 
 namespace Omni {
 	class BaseModule : public Module {
 	public:
 		virtual std::map<std::string, std::shared_ptr<Factory>> getFactories(std::shared_ptr<Registry> registry) {
 			return {
-				{"TCP", std::make_shared<FactoryTcpConnector>(registry)},
-				{"TCP-LISTEN", std::make_shared<FactoryTcpListener>(registry)}
+				//{"TCP", std::make_shared<FactoryTcpConnector>(registry)},
+				{"TCP-LISTEN", std::make_shared<FactoryTcpListener>(registry)},
+				{"TCP-RESOLVER", std::make_shared<FactoryTcpResolver>(registry)},
 			};
 		}
 	};

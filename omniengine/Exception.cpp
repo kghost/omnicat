@@ -16,4 +16,7 @@ namespace Omni {
 
 	ExceptionModuleNotFound::ExceptionModuleNotFound(const std::string & name, const std::string & reason) : Exception("Can't find module(" + name + "): " + reason) {}
 	ExceptionModuleNotFound::~ExceptionModuleNotFound() {}
+
+	ExceptionInvalidArgument::ExceptionInvalidArgument(const std::string & reason) : Exception("Invlid argument: " + reason) {}
+	ExceptionInvalidArgument::~ExceptionInvalidArgument() {}
 }

@@ -35,9 +35,9 @@ namespace Omni {
 
 				virtual bool hasPipeline() = 0; // pipeline always has type of Object
 
-				virtual bool setRawOption(const std::string & value) = 0;
-				virtual bool setOption(const std::string & key) = 0;
-				virtual bool setOption(const std::string & key, const std::string & value) = 0;
+				virtual void setRawOption(const std::string & value) = 0;
+				virtual void setOption(const std::string & key) = 0;
+				virtual void setOption(const std::string & key, const std::string & value) = 0;
 		};
 
 		// Object can associate to group or list, eg:

@@ -24,11 +24,14 @@ DESCRIPTION
 			FD, SOCKET, SOCKET-ESTABLISTHED, SOCKET-ACCEPTED, TCP, TCP-ESTABLISTHED, TCP-ACCEPTED
 
 		TCP-LISTENER options:
-			[address]:port (default ":omnicat", which listens on "0.0.0.0:omnicat" of ipv4 and on "[::]:omnicat" of ipv6)
-				Equivalent to "resolver = RESOLVER{ address=${address}, service=${port} }". 
+			[address]:port (default ":omnicat")
+				Equivalent to "bind = ${address}:${port}". 
+
+			bind=[address]:port (default ":omnicat", which listens on "0.0.0.0:omnicat" of ipv4 and on "[::]:omnicat" of ipv6))
+				Equivalent to "resolver = RESOLVER{ address=${address}, service=${port} }"
 
 			interfaces=[interfaces, ... ] (default none)
-				Equivalent to "resolver = RESOLVER{ interfaces=[*interfaces*] }". Restrict bind to the specified interface
+				Equivalent to "resolver = RESOLVER{ interfaces=[ ${interfaces}, ... ] }". Restrict bind to the specified interface
 
 			family=[ family1, family2 ] (default [ ipv6, ipv4 ])
 				Specify the address family and the order to the RESOLVER. NOTE: use TCP6-LISTENER or TCP4-LISTENER for ipv6 or ipv4.

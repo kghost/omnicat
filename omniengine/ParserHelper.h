@@ -30,9 +30,9 @@ namespace Omni {
 
 			virtual bool hasPipeline() { return Pipeline; }
 
-			virtual bool setRawOption(const std::string & value) { return target.setRawOption(value); }
-			virtual bool setOption(const std::string & key) { return target.setOption(key); }
-			virtual bool setOption(const std::string & key, const std::string & value) { return target.setOption(key, value); }
+			virtual void setRawOption(const std::string & value) { target.setRawOption(value); }
+			virtual void setOption(const std::string & key) { target.setOption(key); }
+			virtual void setOption(const std::string & key, const std::string & value) { target.setOption(key, value); }
 		private:
 			TargetT & target;
 		};
@@ -59,6 +59,25 @@ namespace Omni {
 			virtual std::shared_ptr<Group> getGroup() { return std::make_shared<GroupT>(target); }
 		private:
 			TargetT & target;
+		};
+
+		//
+		template<typename TargetT>
+		class EntityStore {
+		public:
+			template<typename ...Args>
+			explicit EntityStore(Args && ... args) : result(std::make_shared<TargetT>(std::forward<Args>(args)...)) {}
+
+			std::shared_ptr<Entity> getResult() { return result; }
+		protected:
+			std::shared_ptr<TargetT> result;
+		};
+
+		template<typename TargetT, typename HelperType>
+		class EntityWrapper : public EntityStore<TargetT>, public HelperType {
+		public:
+			template<typename ...Args>
+			explicit EntityWrapper(Args && ... args) : EntityStore<TargetT>(std::forward<Args>(args)...), HelperType(*result) {}
 		};
 	}
 }

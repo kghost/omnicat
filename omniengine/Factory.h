@@ -18,6 +18,7 @@ namespace Omni {
 		virtual ~Factory() {};
 
 		virtual std::shared_ptr<Parser::Object> createObject() = 0;
+		virtual std::shared_ptr<Entity> createEntity() = 0;
 	protected:
 		std::shared_ptr<Registry> getRegistry() { return registry; }
 	private:

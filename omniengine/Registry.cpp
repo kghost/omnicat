@@ -26,6 +26,7 @@ namespace Omni {
 		RegistryImpl() {}
 		virtual std::shared_ptr<Factory> getFactory(const std::string & name);
 		virtual std::shared_ptr<Parser::Object> createObject(const std::string & name);
+		virtual std::shared_ptr<Entity> createEntity(const std::string & name);
 		virtual void loadModule(const std::string & name);
 	private:
 		std::map<std::string, std::shared_ptr<Factory>> classes;
@@ -42,6 +43,10 @@ namespace Omni {
 
 	std::shared_ptr<Parser::Object> RegistryImpl::createObject(const std::string & name) {
 		return getFactory(name)->createObject();
+	}
+
+	std::shared_ptr<Entity> RegistryImpl::createEntity(const std::string & name) {
+		return getFactory(name)->createEntity();
 	}
 
 #ifdef __linux__

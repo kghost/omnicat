@@ -9,10 +9,10 @@ namespace Omni {
 	namespace Parser {
 		class Object;
 	}
-	class FactoryTcpListener : public Factory {
+	class FactoryTcpResolver : public Factory {
 	public:
-		FactoryTcpListener(std::shared_ptr<Registry> registry) : Factory(registry) {};
-		virtual ~FactoryTcpListener() {}
+		FactoryTcpResolver(std::shared_ptr<Registry> registry) : Factory(registry) {};
+		virtual ~FactoryTcpResolver() {}
 
 		virtual std::shared_ptr<Parser::Object> createObject();
 		virtual std::shared_ptr<Entity> createEntity();

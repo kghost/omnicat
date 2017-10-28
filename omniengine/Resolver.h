@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Entity.h"
+
 namespace Omni {
-	class Resolver {
+	class Resolver : public Entity {
 	public:
 		void resolve();
 	};

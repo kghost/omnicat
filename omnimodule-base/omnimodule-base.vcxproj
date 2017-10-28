@@ -155,27 +155,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="FactoryTcpConnector.h" />
+    <ClInclude Include="EntityTcpResolver.h" />
     <ClInclude Include="FactoryTcpListener.h" />
-    <ClInclude Include="EntityTcpConnector.h" />
-    <ClInclude Include="EntityAcceptor.h" />
-    <ClInclude Include="EntityFileRecvSend.h" />
+    <ClInclude Include="EntityTcpListener.h" />
+    <ClInclude Include="FactoryTcpResolver.h" />
     <ClInclude Include="InstanceAcceptor.h" />
     <ClInclude Include="OptionsFileDescriptor.h" />
+    <ClInclude Include="OptionsListener.h" />
+    <ClInclude Include="OptionsResolver.h" />
     <ClInclude Include="OptionsSocketListener.h" />
+    <ClInclude Include="OptionsTcpListener.h" />
     <ClInclude Include="OptionsTemplate.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="FactoryTcpConnector.cpp" />
+    <ClCompile Include="EntityTcpResolver.cpp" />
     <ClCompile Include="FactoryTcpListener.cpp" />
-    <ClCompile Include="EntityTcpConnector.cpp" />
-    <ClCompile Include="EntityAcceptor.cpp" />
-    <ClCompile Include="EntityFileRecvSend.cpp" />
+    <ClCompile Include="EntityTcpListener.cpp" />
+    <ClCompile Include="FactoryTcpResolver.cpp" />
     <ClCompile Include="InstanceAcceptor.cpp" />
     <ClCompile Include="Module.cpp" />
-    <ClCompile Include="OptionsFileDescriptor.cpp" />
-    <ClCompile Include="OptionsSocketListener.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\omniengine\omniengine.vcxproj">

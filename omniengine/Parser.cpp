@@ -48,7 +48,11 @@ namespace Omni {
 
 		class Placeholder {};
 
-		class grammar : public boost::spirit::qi::grammar<boost::u8_to_u32_iterator<std::string::const_iterator>, std::shared_ptr<Object>()> {
+		class grammar : public boost::spirit::qi::grammar<
+			boost::u8_to_u32_iterator<std::string::const_iterator>,
+			std::shared_ptr<Object>(),
+			boost::spirit::unicode::space_type
+		> {
 		public:
 			typedef typename boost::u8_to_u32_iterator<std::string::const_iterator> Iterator;
 
@@ -81,31 +85,37 @@ namespace Omni {
 				boost::spirit::lit('\"') >> (*double_quoted_char) >> boost::spirit::lit('\"'),
 				"double_quoted"
 			};
+			boost::spirit::qi::rule<Iterator, wchar_t()> special_charator = {
+				boost::spirit::unicode::char_("{}[]()=,\'\"\\") | boost::spirit::unicode::space,
+				"special_charator"
+			};
 			boost::spirit::qi::rule<Iterator, std::vector<wchar_t>()> str_elem = {
-				(~boost::spirit::unicode::char_("{}[]()=,\'\"\\")) |
-				(boost::spirit::lit('\\') >> boost::spirit::unicode::char_("{}[]()=,\'\"\\")) |
+				(boost::spirit::unicode::char_ - special_charator) |
+				(boost::spirit::lit('\\') >> special_charator) |
 				double_quoted | single_quoted,
 				"str_elem"
 			};
 			boost::spirit::qi::rule<Iterator, std::string()> str = {
-				(*str_elem)[
-					boost::spirit::_val = boost::phoenix::bind([](std::vector<std::vector<wchar_t>> & v) -> std::string {
-						std::basic_stringstream<wchar_t> ss;
-						std::ostream_iterator<wchar_t, wchar_t> wssi(ss);
-						for (auto o : v) std::copy(o.begin(), o.end(), wssi);
-						return toUTF8(ss.str());
-					}, boost::spirit::_1)
+				boost::spirit::lexeme[
+					(+str_elem)[
+						boost::spirit::_val = boost::phoenix::bind([](std::vector<std::vector<wchar_t>> & v) -> std::string {
+							std::basic_stringstream<wchar_t> ss;
+							std::ostream_iterator<wchar_t, wchar_t> wssi(ss);
+							for (auto o : v) std::copy(o.begin(), o.end(), wssi);
+							return toUTF8(ss.str());
+						}, boost::spirit::_1)
+					]
 				],
 				"str"
 			};
-			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<Group>, std::string)> option_value = {
+			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<Group>, std::string), boost::spirit::unicode::space_type> option_value = {
 				boost::spirit::lit('=') >> lazy(
 					boost::phoenix::bind([this](std::shared_ptr<Group> r1, const std::string & r2) -> boost::spirit::qi::rule<Iterator> {
 						switch (r1->groupOptionType(r2)) {
 							case Type::STRING:
 								return str[
-									boost::spirit::_pass = boost::phoenix::bind([r1, r2](const std::string & val) -> bool {
-										return r1->setOption(r2, val);
+									boost::phoenix::bind([r1, r2](const std::string & val) -> void {
+										r1->setOption(r2, val);
 									}, boost::spirit::_1)
 								];
 							default: return !boost::spirit::eps;
@@ -114,21 +124,21 @@ namespace Omni {
 				),
 				"option_value"
 			};
-			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<Group>), boost::spirit::qi::locals<std::string>> option = {
+			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<Group>), boost::spirit::qi::locals<std::string>, boost::spirit::unicode::space_type> option = {
 				str[boost::spirit::_a = boost::spirit::_1] >> lazy(
-					boost::phoenix::bind([this](std::shared_ptr<Group> r1, const std::string & a) -> boost::spirit::qi::rule<Iterator> {
+					boost::phoenix::bind([this](std::shared_ptr<Group> r1, const std::string & a) -> boost::spirit::qi::rule<Iterator, boost::spirit::unicode::space_type> {
 						switch (r1->groupOptionType(a)) {
 							case Type::FLAG:
-								if (r1->setOption(a)) return boost::spirit::eps;
-								else  return !boost::spirit::eps;
+								r1->setOption(a);
+								return boost::spirit::eps;
 							case Type::GROUP:
 							case Type::LIST:
 							case Type::OBJECT:
 							case Type::STRING:
 								return option_value(boost::phoenix::val(r1), boost::phoenix::val(a));
 							case Type::RAW:
-								if (r1->setRawOption(a)) return boost::spirit::eps;
-								else return !boost::spirit::eps;
+								r1->setRawOption(a);
+								return boost::spirit::eps;
 							default:
 								return !boost::spirit::eps;
 						}
@@ -136,30 +146,31 @@ namespace Omni {
 				),
 				"option"
 			};
-			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<Group>)> pipeline = {
-				boost::spirit::lit('(') >> (str % boost::spirit::lit('|')) >> boost::spirit::lit(')'),
+			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<Group>), boost::spirit::unicode::space_type> pipeline = {
+				(-boost::spirit::lit(',')) >> boost::spirit::lit('(') >> *str >> boost::spirit::lit(')'),
 				"pipeline"
 			};
-			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<List>)> list = {
-				boost::spirit::lit('[') >> (str % boost::spirit::lit('|')) >> boost::spirit::lit(']'),
+			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<List>), boost::spirit::unicode::space_type> list = {
+				boost::spirit::lit('[') >> (str % boost::spirit::lit(',')) >> boost::spirit::lit(']'),
 				"list"
 			};
-			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<Group>)> group = {
+			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<Group>), boost::spirit::unicode::space_type> group = {
 				boost::spirit::lit('{') >> (option(boost::spirit::_r1) % boost::spirit::lit(',')) >> lazy(
-					boost::phoenix::bind([this](std::shared_ptr<Group> r1) -> boost::spirit::qi::rule<Iterator> {
+					boost::phoenix::bind([this](std::shared_ptr<Group> r1) -> boost::spirit::qi::rule<Iterator, boost::spirit::unicode::space_type> {
 						if (r1->hasPipeline()) return pipeline(boost::phoenix::val(r1));
 						else return boost::spirit::eps;
 					}, boost::spirit::_r1)
 				)>> boost::spirit::lit('}'),
 				"group"
 			};
-			boost::spirit::qi::rule<Iterator, std::shared_ptr<Object>(), boost::spirit::qi::locals<std::shared_ptr<Object>>> object = {
+			boost::spirit::qi::rule<Iterator, std::shared_ptr<Object>(), boost::spirit::qi::locals<std::shared_ptr<Object>>,
+				boost::spirit::unicode::space_type> object = {
 				(str[
 					boost::spirit::_pass = boost::phoenix::bind([this](const std::string & r1, std::shared_ptr<Object> & a) -> bool {
 						return bool(a = createObject(registry, r1));
 					}, boost::spirit::_1, boost::spirit::_a)
 				] >> lazy(
-					boost::phoenix::bind([this](std::shared_ptr<Object> a) -> boost::spirit::qi::rule<Iterator, void()> {
+					boost::phoenix::bind([this](std::shared_ptr<Object> a) -> boost::spirit::qi::rule<Iterator, void(), boost::spirit::unicode::space_type> {
 						if (a->hasGroup()) {
 							auto p = a->getGroup();
 							if (p->isGroupOptional()) return group(boost::phoenix::val(p)) | boost::spirit::eps;
@@ -173,7 +184,7 @@ namespace Omni {
 				))[boost::spirit::_val = boost::spirit::_a],
 				"object"
 			};
-			boost::spirit::qi::rule<Iterator, std::shared_ptr<Object>()> result = {
+			boost::spirit::qi::rule<Iterator, std::shared_ptr<Object>(), boost::spirit::unicode::space_type> result = {
 				object >> boost::spirit::eoi,
 				"result"
 			};
@@ -182,7 +193,7 @@ namespace Omni {
 		SHARED std::shared_ptr<Object> parse(std::shared_ptr<Registry> registry, const std::string & input) {
 			boost::u8_to_u32_iterator<std::string::const_iterator> begin(input.begin()), end(input.end());
 			std::shared_ptr<Object> v;
-			if (boost::spirit::qi::parse(begin, end, grammar(registry), v)) {
+			if (boost::spirit::qi::phrase_parse(begin, end, grammar(registry), boost::spirit::unicode::space, v)) {
 				return v;
 			} else {
 				return nullptr;

@@ -20,6 +20,7 @@ namespace Omni {
 		virtual ~Registry() = 0;
 		virtual std::shared_ptr<Factory> getFactory(const std::string & name) = 0;
 		virtual std::shared_ptr<Parser::Object> createObject(const std::string & name) = 0;
+		virtual std::shared_ptr<Entity> createEntity(const std::string & name) = 0;
 		virtual void loadModule(const std::string & name) = 0;
 	};
 

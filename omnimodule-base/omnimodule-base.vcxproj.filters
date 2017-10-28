@@ -15,22 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FactoryTcpConnector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FactoryTcpListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EntityFileRecvSend.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityTcpConnector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="InstanceAcceptor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityAcceptor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OptionsFileDescriptor.h">
@@ -42,12 +30,27 @@
     <ClInclude Include="OptionsTemplate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OptionsTcpListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityTcpListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityTcpResolver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FactoryTcpResolver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsResolver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FactoryTcpConnector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FactoryTcpListener.cpp">
@@ -56,22 +59,16 @@
     <ClCompile Include="Module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EntityFileRecvSend.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityTcpConnector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="InstanceAcceptor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EntityAcceptor.cpp">
+    <ClCompile Include="EntityTcpListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OptionsFileDescriptor.cpp">
+    <ClCompile Include="EntityTcpResolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OptionsSocketListener.cpp">
+    <ClCompile Include="FactoryTcpResolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

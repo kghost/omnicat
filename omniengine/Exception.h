@@ -45,4 +45,11 @@ namespace Omni {
 		ExceptionModuleNotFound(const std::string & name, const std::string & reason);
 		~ExceptionModuleNotFound();
 	};
+
+	class SHARED ExceptionInvalidArgument : public Exception {
+	public:
+		ExceptionInvalidArgument(const std::string & reason);
+		~ExceptionInvalidArgument();
+	};
+
 }

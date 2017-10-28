@@ -1,23 +1,15 @@
 #pragma once
 
-#ifdef _WIN32
-#include <Winsock2.h>
-#endif
-
-#include "../omniengine/ParserSupport.h"
 #include "OptionsTemplate.h"
 
 namespace Omni {
-	class OptionsSocketListener : public OptionsTemplate<OptionsSocketListener,
-#ifdef _WIN32
-		SOCKET
-#else
-		int
-#endif // _WIN
-	> {
+	template<typename OwnerT, typename SocketT>
+	class OptionsSocketListener : public OptionsTemplate<OptionsSocketListener<OwnerT, SocketT>, SocketT> {
 	public:
-		void execute(type fd);
-
-		static DefineT define;
+		OptionsSocketListener(OwnerT& owner) : owner(owner) {}
+		DefineT define = {
+		};
+	private:
+		OwnerT& owner;
 	};
 }

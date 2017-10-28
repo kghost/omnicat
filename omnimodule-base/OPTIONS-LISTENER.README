@@ -25,3 +25,6 @@ DESCRIPTION
 
 		ref=#symbol
 			This allows to configure established socket options. The inner socket options depends on LISTENER types.
+
+		accept_cloexec (default false)
+			Sets the O_CLOEXEC flag on the accepted new established file descriptor.
