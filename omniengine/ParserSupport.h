@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <boost/core/noncopyable.hpp>
 
 #include "shared.h"
 
@@ -19,7 +20,7 @@ namespace Omni {
 		};
 
 		// [ option1 | option2 | option3 ]
-		class SHARED List {
+		class SHARED List : private boost::noncopyable {
 			public:
 				SHARED_MEMBER virtual ~List() = 0;
 				virtual bool isListOptional() = 0;
@@ -27,7 +28,7 @@ namespace Omni {
 		};
 
 		// {flagoption,namedoption=type,(pipline1 | pipeline2)}
-		class SHARED Group {
+		class SHARED Group : private boost::noncopyable {
 			public:
 				SHARED_MEMBER virtual ~Group() = 0;
 				virtual bool isGroupOptional() = 0;
@@ -42,10 +43,11 @@ namespace Omni {
 
 		// Object can associate to group or list, eg:
 		//   ObjectFactory{group} or ObjectFactory[list]
-		// iif the Object can be dynamic casted to group or list.
-		class SHARED Object {
+		class SHARED Object : private boost::noncopyable {
 			public:
 				SHARED_MEMBER virtual ~Object() = 0;
+
+				virtual std::shared_ptr<Entity> getResult() = 0;
 
 				virtual bool hasList() = 0;
 				virtual std::shared_ptr<List> getList() = 0;

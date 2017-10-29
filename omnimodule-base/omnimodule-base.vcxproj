@@ -159,7 +159,8 @@
     <ClInclude Include="FactoryTcpListener.h" />
     <ClInclude Include="EntityTcpListener.h" />
     <ClInclude Include="FactoryTcpResolver.h" />
-    <ClInclude Include="InstanceAcceptor.h" />
+    <ClInclude Include="InstanceTcpListener.h" />
+    <ClInclude Include="InstanceTcpResolver.h" />
     <ClInclude Include="OptionsFileDescriptor.h" />
     <ClInclude Include="OptionsListener.h" />
     <ClInclude Include="OptionsResolver.h" />
@@ -173,7 +174,8 @@
     <ClCompile Include="FactoryTcpListener.cpp" />
     <ClCompile Include="EntityTcpListener.cpp" />
     <ClCompile Include="FactoryTcpResolver.cpp" />
-    <ClCompile Include="InstanceAcceptor.cpp" />
+    <ClCompile Include="InstanceTcpListener.cpp" />
+    <ClCompile Include="InstanceTcpResolver.cpp" />
     <ClCompile Include="Module.cpp" />
   </ItemGroup>
   <ItemGroup>

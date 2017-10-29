@@ -17,6 +17,7 @@ namespace Omni {
 	class Entity;
 	class SHARED Registry : private boost::noncopyable {
 	public:
+		Registry();
 		virtual ~Registry() = 0;
 		virtual std::shared_ptr<Factory> getFactory(const std::string & name) = 0;
 		virtual std::shared_ptr<Parser::Object> createObject(const std::string & name) = 0;

@@ -61,23 +61,19 @@ namespace Omni {
 			TargetT & target;
 		};
 
-		//
-		template<typename TargetT>
-		class EntityStore {
+		template<typename TargetT, typename HelperType>
+		class EntityWrapper : public HelperType {
 		public:
-			template<typename ...Args>
-			explicit EntityStore(Args && ... args) : result(std::make_shared<TargetT>(std::forward<Args>(args)...)) {}
+			explicit EntityWrapper(std::shared_ptr<TargetT> result) : result(result), HelperType(*result) {}
 
 			std::shared_ptr<Entity> getResult() { return result; }
 		protected:
 			std::shared_ptr<TargetT> result;
 		};
 
-		template<typename TargetT, typename HelperType>
-		class EntityWrapper : public EntityStore<TargetT>, public HelperType {
-		public:
-			template<typename ...Args>
-			explicit EntityWrapper(Args && ... args) : EntityStore<TargetT>(std::forward<Args>(args)...), HelperType(*EntityStore<TargetT>::result) {}
-		};
+		template<typename TargetT, typename HelperType, typename ...Args>
+		std::shared_ptr<EntityWrapper<TargetT, HelperType>> wrapEntity(Args && ... args) {
+			return std::make_shared<EntityWrapper<TargetT, HelperType>>(std::make_shared<TargetT>(std::forward<Args>(args)...));
+		}
 	}
 }

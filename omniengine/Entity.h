@@ -1,14 +1,16 @@
 #pragma once
 
 #include <memory>
-#include <map>
-#include <functional>
-#include <boost/any.hpp>
 #include <boost/core/noncopyable.hpp>
 
-#include "Key.h"
-
+#include "AsyncCall.h"
 #include "shared.h"
+
+namespace boost {
+	namespace asio {
+		class io_service;
+	}
+}
 
 namespace Omni {
 	class Instance;
@@ -16,10 +18,14 @@ namespace Omni {
 		public:
 			virtual ~Entity() = 0;
 
-			virtual bool isPassive() = 0;
+			// last step before start, should:
+			//   * finalize options
+			//   * verify options
+			//   * resolve symbols
 			virtual void prepare() = 0;
 
-			virtual void createInstance(std::function<int()> callback) = 0;
-			virtual void passiveCreateInstance(std::map<Key, boost::any> hints, std::function<int()> callback) = 0;
+			virtual void createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<Instance>> complete) = 0;
+	protected:
+		//SymbolTable symbols;
 	};
 }

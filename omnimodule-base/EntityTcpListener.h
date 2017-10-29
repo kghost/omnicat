@@ -5,21 +5,25 @@
 
 #include "../omniengine/ParserSupport.h"
 #include "../omniengine/Entity.h"
+#include "../omniengine/AsyncCall.h"
 #include "OptionsTcpListener.h"
 #include "OptionsListener.h"
+
+namespace boost {
+	namespace asio {
+		class io_service;
+	}
+}
 
 namespace Omni {
 	class Registry;
 	class Resolver;
-	class EntityTcpListener : public Entity {
+	class EntityTcpListener : public Entity, public std::enable_shared_from_this<EntityTcpListener>{
 	public:
 		EntityTcpListener(std::shared_ptr<Registry> registry) : registry(registry), options{*this, *this} {}
-		virtual bool isPassive() { return false; };
 		virtual void prepare() {}
 
-		virtual void createInstance(std::function<int()> callback);
-		virtual void passiveCreateInstance(std::map<Key, boost::any> hints, std::function<int()> callback);
-
+		virtual void createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<Instance>> complete);
 	public:
 		std::shared_ptr<Registry> getRegistry() { return registry; }
 

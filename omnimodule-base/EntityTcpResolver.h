@@ -5,19 +5,24 @@
 
 #include "../omniengine/ParserSupport.h"
 #include "../omniengine/Resolver.h"
+#include "../omniengine/AsyncCall.h"
 #include "OptionsResolver.h"
+
+namespace boost {
+	namespace asio {
+		class io_service;
+	}
+}
 
 namespace Omni {
 	class Registry;
-	class EntityTcpResolver : public Resolver {
+	class InstanceResolver;
+	class EntityTcpResolver : public Resolver, public std::enable_shared_from_this<EntityTcpResolver> {
 	public:
 		EntityTcpResolver(std::shared_ptr<Registry> registry) : registry(registry), options(*this) {}
-		virtual bool isPassive() { return false; };
 		virtual void prepare() {}
 
-		virtual void createInstance(std::function<int()> callback);
-		virtual void passiveCreateInstance(std::map<Key, boost::any> hints, std::function<int()> callback);
-
+		virtual void createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<InstanceResolver>> complete);
 	public:
 		// needed by parser
 		std::tuple<

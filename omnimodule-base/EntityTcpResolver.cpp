@@ -6,10 +6,12 @@
 #include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/fusion/include/iteration.hpp>
 #include "../omniengine/Exception.h"
+#include "InstanceTcpResolver.h"
 
 namespace Omni {
-	void EntityTcpResolver::createInstance(std::function<int()> callback) { OMNI_INTERNAL_ERROR; }
-	void EntityTcpResolver::passiveCreateInstance(std::map<Key, boost::any> hints, std::function<int()> callback) { OMNI_INTERNAL_ERROR; }
+	void EntityTcpResolver::createInstance(boost::asio::io_service & io, Completion<std::shared_ptr<InstanceResolver>> complete) {
+		complete.ok(std::make_shared<InstanceTcpResolver>(shared_from_this(), io));
+	}
 
 	Parser::Type EntityTcpResolver::groupOptionType(const std::string & key) {
 		return boost::fusion::fold(options, std::optional<Parser::Type>(), [&key](std::optional<Parser::Type> last, auto & e) -> std::optional<Parser::Type> {

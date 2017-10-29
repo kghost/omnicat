@@ -18,9 +18,6 @@
     <ClInclude Include="FactoryTcpListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InstanceAcceptor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OptionsFileDescriptor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -48,6 +45,12 @@
     <ClInclude Include="OptionsResolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InstanceTcpListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InstanceTcpResolver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -59,9 +62,6 @@
     <ClCompile Include="Module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InstanceAcceptor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EntityTcpListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,6 +69,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FactoryTcpResolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InstanceTcpListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InstanceTcpResolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

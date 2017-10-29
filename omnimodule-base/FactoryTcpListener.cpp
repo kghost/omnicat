@@ -9,10 +9,10 @@
 
 namespace Omni {
 	std::shared_ptr<Parser::Object> FactoryTcpListener::createObject() {
-		return std::make_shared<Parser::EntityWrapper<
+		return Parser::wrapEntity<
 			EntityTcpListener,
 			Parser::HelperObject<EntityTcpListener, Parser::HelperGroup<EntityTcpListener, true, true>>
-		>>(getRegistry());
+		>(getRegistry());
 	}
 
 	std::shared_ptr<Entity> FactoryTcpListener::createEntity() {

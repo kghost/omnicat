@@ -7,8 +7,11 @@
 #include <stdio.h>
 
 #include "../omniengine/Registry.h"
-#include "../omniengine/Factory.h"
+#include "../omniengine/Entity.h"
 #include "../omniengine/Parser.h"
+#include "../omniengine/ParserSupport.h"
+
+#include "IoService.h"
 
 #ifdef USE_WIDECHAR_API
 int wmain(int argc, wchar_t *argv[], wchar_t *envp[])
@@ -27,6 +30,9 @@ int main(int argc, char *argv[], char *envp[])
 		auto p = Omni::Parser::parse(registry, toUTF8(
 			L" TCP-LISTEN { fork, localhost:12345 ( a b )}"
 		));
+		auto e = p->getResult();
+		e->prepare();
+		start(e);
 	} catch (const Omni::Exception & exception) {
 #ifdef USE_WIDECHAR_API
 		std::wcerr << fromUTF8(std::string(exception.what())) << std::endl;

@@ -19,9 +19,10 @@
 #include "Factory.h"
 
 namespace Omni {
+	Registry::Registry() {}
 	Registry::~Registry() {}
 
-	class RegistryImpl : public Registry, public std::enable_shared_from_this<Registry> {
+	class RegistryImpl : public Registry, public std::enable_shared_from_this<RegistryImpl> {
 	public:
 		RegistryImpl() {}
 		virtual std::shared_ptr<Factory> getFactory(const std::string & name);

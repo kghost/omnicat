@@ -5,11 +5,14 @@
 #include <boost/asio.hpp>
 #include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/fusion/include/iteration.hpp>
+
 #include "../omniengine/Exception.h"
+#include "InstanceTcpListener.h"
 
 namespace Omni {
-	void EntityTcpListener::createInstance(std::function<int()> callback) { OMNI_INTERNAL_ERROR; }
-	void EntityTcpListener::passiveCreateInstance(std::map<Key, boost::any> hints, std::function<int()> callback) { OMNI_INTERNAL_ERROR; }
+	void EntityTcpListener::createInstance(boost::asio::io_service & io, Completion<std::shared_ptr<Instance>> complete) {
+		complete.ok(std::make_shared<InstanceTcpListener>(shared_from_this(), io));
+	}
 
 	Parser::Type EntityTcpListener::groupOptionType(const std::string & key) {
 		return boost::fusion::fold(options, std::optional<Parser::Type>(), [&key](std::optional<Parser::Type> last, auto & e) -> std::optional<Parser::Type> {
