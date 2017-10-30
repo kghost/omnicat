@@ -6,7 +6,7 @@
 #include <boost/asio/ip/tcp.hpp>
 
 #include "../omniengine/InstanceResolver.h"
-#include "../omniengine/AsyncCall.h"
+#include "../omniengine/Weave.h"
 
 namespace Omni {
 	class EntityTcpResolver;

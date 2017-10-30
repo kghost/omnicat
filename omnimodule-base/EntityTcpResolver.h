@@ -5,7 +5,7 @@
 
 #include "../omniengine/ParserSupport.h"
 #include "../omniengine/Resolver.h"
-#include "../omniengine/AsyncCall.h"
+#include "../omniengine/Weave.h"
 #include "OptionsResolver.h"
 
 namespace boost {

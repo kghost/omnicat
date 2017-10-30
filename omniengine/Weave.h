@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <functional>
 #include <boost/system/error_code.hpp>
 #include <boost/system/system_error.hpp>
 
@@ -49,6 +50,6 @@ namespace Omni {
 		}
 
 		std::function<void(ResultT ...)> success;
-		std::function<void(std::exception_ptr) noexcept> fail;
+		std::function<void(std::exception_ptr)> fail;
 	};
 }

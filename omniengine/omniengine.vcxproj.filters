@@ -66,7 +66,7 @@
     <ClInclude Include="ErrorCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AsyncCall.h">
+    <ClInclude Include="Weave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,7 +98,7 @@
     <ClCompile Include="InstanceResolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AsyncCall.cpp">
+    <ClCompile Include="Weave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

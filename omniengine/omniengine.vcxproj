@@ -155,7 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AsyncCall.h" />
+    <ClInclude Include="Weave.h" />
     <ClInclude Include="ErrorCode.h" />
     <ClInclude Include="Factory.h" />
     <ClInclude Include="InstanceResolver.h" />
@@ -176,7 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="AsyncCall.cpp" />
+    <ClCompile Include="Weave.cpp" />
     <ClCompile Include="InstanceResolver.cpp" />
     <ClCompile Include="ParserSupport.cpp" />
     <ClCompile Include="Registry.cpp" />
