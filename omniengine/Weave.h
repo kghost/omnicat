@@ -1,55 +1,80 @@
 #pragma once
 
-#include <utility>
+#include <cassert>
+#include <list>
+#include <stack>
 #include <functional>
-#include <boost/system/error_code.hpp>
-#include <boost/system/system_error.hpp>
-
-#include "ErrorCode.h"
-#include "Exception.h"
 
 namespace Omni {
-	class SHARED ExceptionUnhandledError : public Exception {
-	public:
-		ExceptionUnhandledError(ErrorCode::error_code ec, std::string && location);
-		virtual ~ExceptionUnhandledError();
+	namespace Fiber {
+		//  Transform:
+		//    pre-pause;
+		//    v = pausable();
+		//    post-pause;
+		//  To
+		//    pre-pause;
+		//    return Continue{
+		//      pausable_cps_form() -> future;
+		//      [](v) { post-pause; }
+		//    };
+		//
+		//  Transform:
+		//    V v = try { body } catch(...) { handle-fail }
+		//  To
+		//    Fiber WithTry([] -> Fiber { body }, handle-fail, Fiber (post-body)(V, Continuation))
+		//
+		//  post-pause is a continuation object. Many language can auto generate it by using CPS transform, but in c++ world, we need to write it manually.
+		//  CPS form: instead returns a value , pausable returns a future
 
-		virtual const char* what() const noexcept;
-	private:
-#pragma warning(push)
-#pragma warning(disable: 4251)
-		ErrorCode::error_code ec;
-		std::string location;
-		std::string w;
-#pragma warning(pop)
-	};
 
-	template<typename ... ResultT>
-	class Completion {
-	public:
-		template<typename SuccessT, typename FailT>
-		Completion(SuccessT && successF, FailT && failF)
-			: success(std::forward<SuccessT>(successF)), fail(std::forward<FailT>(failF)) {}
+#ifndef NDEBUG
+		typedef int Fiber;
+#else
+		typedef void Fiber;
+#endif
 
-		void ok(ResultT && ... result) const {
-			in([this, result = std::make_tuple(std::forward<ResultT>(result)...)]{
-				std::apply(success, result);
-			});
+		class FiberExceptionHandler {
+			public:
+				virtual ~FiberExceptionHandler() {
+#ifndef NDEBUG
+					assert(!installed);
+#endif
+				}
+
+				virtual Fiber handle(std::exception_ptr && eptr);
+			protected:
+				void install();
+				void uninstall();
+			private:
+#ifndef NDEBUG
+				bool installed = false;
+#endif
+		};
+
+		class FiberContext ;
+		extern std::list<FiberContext> fibers;
+		class FiberContext {
+			public:
+				decltype(fibers)::const_iterator me;
+				std::stack<FiberExceptionHandler*> ehs;
+		};
+
+		extern thread_local FiberContext* current;
+
+		template<template <typename Result> class Continuation, typename Result, typename ... Args>
+		using CodePiece = std::function<Fiber(Args && ..., Continuation<Result>&&)>;
+
+		void run(std::function<void()>&& body);
+
+		template<template <typename Result> class Continuation, typename ... Args>
+		Fiber ScheduleIn(FiberContext& context, Continuation<Args ...>&& continuation) {
+			current = &context;
 		}
 
-		void in(std::function<void()>&& fun) const {
-			std::exception_ptr eptr;
-			try { return fun(); } catch (const Exception &) {
-				eptr = std::current_exception();
-			}
-			fail(eptr);
-		}
-#define V(ec) v(ec, "(@" __FILE__ ":"  BOOST_PP_STRINGIZE(__LINE__) ")")
-		void v(ErrorCode::error_code ec, std::string location) const {
-			if (ec) throw ExceptionUnhandledError(ec, std::move(location));
+		Fiber ScheduleOut() {
 		}
 
-		std::function<void(ResultT ...)> success;
-		std::function<void(std::exception_ptr)> fail;
-	};
+		void ScheduleOutFinal(Fiber fiber) {
+		}
+	}
 }

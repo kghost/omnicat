@@ -10,19 +10,22 @@
 #include "../omniengine/Entity.h"
 #include "../omniengine/Instance.h"
 #include "../omniengine/Exception.h"
+#include "../omniengine/Weave.h"
 
 namespace Omni {
 	void start(std::shared_ptr<Entity> e) {
 		boost::asio::io_service io;
 
-		e->createInstance(io, {
-			[&io](std::shared_ptr<Instance> o) {
-				o->start(io, {
-					[]() {},
-					[](std::exception_ptr eptr) {}
-				});
-			},
-			[](std::exception_ptr eptr) {}
+		run([] {
+			e->createInstance(io, {
+				[&io](std::shared_ptr<Instance> o) {
+					o->start(io, {
+						[]() {},
+					});
+				},
+			});
 		});
+
+		io_service.run();
 	}
 }
