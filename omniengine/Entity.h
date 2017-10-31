@@ -24,7 +24,7 @@ namespace Omni {
 			//   * resolve symbols
 			virtual void prepare() = 0;
 
-			virtual void createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<Instance>> complete) = 0;
+			virtual Fiber::Fiber createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<Instance>> complete) = 0;
 	protected:
 		//SymbolTable symbols;
 	};

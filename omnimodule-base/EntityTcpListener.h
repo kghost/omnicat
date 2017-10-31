@@ -21,9 +21,9 @@ namespace Omni {
 	class EntityTcpListener : public Entity, public std::enable_shared_from_this<EntityTcpListener>{
 	public:
 		EntityTcpListener(std::shared_ptr<Registry> registry) : registry(registry), options{*this, *this} {}
-		virtual void prepare() {}
+		virtual void prepare();
 
-		virtual void createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<Instance>> complete);
+		virtual Fiber::Fiber createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<Instance>> complete);
 	public:
 		std::shared_ptr<Registry> getRegistry() { return registry; }
 

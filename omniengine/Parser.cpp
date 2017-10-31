@@ -14,7 +14,7 @@
 #ifndef NDEBUG
 #include "utilities.h"
 #define BOOST_SPIRIT_DEBUG
-//#define BOOST_SPIRIT_DEBUG_OUT Omni::utf8cout
+#define BOOST_SPIRIT_DEBUG_OUT Omni::utf8cout
 #include <boost/spirit/include/classic_debug.hpp>
 #endif
 #include <boost/spirit/include/qi.hpp>
@@ -34,6 +34,12 @@
 
 namespace Omni {
 	namespace Parser {
+		template <typename Ostream>
+		Ostream& operator<<(Ostream& os, const char * o) {
+			os << std::string(o);
+			return os;
+		}
+
 		template <typename Ostream, typename T>
 		Ostream& operator<<(Ostream& os, T * o) {
 			os << typeid(*o).name() << "#" << reinterpret_cast<std::uintptr_t>(o);

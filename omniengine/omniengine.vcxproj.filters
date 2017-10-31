@@ -69,6 +69,12 @@
     <ClInclude Include="Weave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WeaverAdapterAsio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaverException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -99,6 +105,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Weave.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaverAdapterAsio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

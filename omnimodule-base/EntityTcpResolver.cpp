@@ -9,8 +9,8 @@
 #include "InstanceTcpResolver.h"
 
 namespace Omni {
-	void EntityTcpResolver::createInstance(boost::asio::io_service & io, Completion<std::shared_ptr<InstanceResolver>> complete) {
-		complete.ok(std::make_shared<InstanceTcpResolver>(shared_from_this(), io));
+	Fiber::Fiber EntityTcpResolver::createInstance(boost::asio::io_service & io, Completion<std::shared_ptr<InstanceResolver>> complete) {
+		return complete(std::make_shared<InstanceTcpResolver>(shared_from_this(), io));
 	}
 
 	Parser::Type EntityTcpResolver::groupOptionType(const std::string & key) {

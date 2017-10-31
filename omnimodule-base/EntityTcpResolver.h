@@ -1,6 +1,7 @@
 #pragma once
 
 #include <tuple>
+#include <set>
 #include <boost/asio.hpp>
 
 #include "../omniengine/ParserSupport.h"
@@ -20,9 +21,13 @@ namespace Omni {
 	class EntityTcpResolver : public Resolver, public std::enable_shared_from_this<EntityTcpResolver> {
 	public:
 		EntityTcpResolver(std::shared_ptr<Registry> registry) : registry(registry), options(*this) {}
-		virtual void prepare() {}
+		virtual void prepare() {
+			if (!family) family = {Family::IPv4, Family::IPv6};
+			if (!hasHost) hasHost = false;
+			if (!hasService) hasService = false;
+		}
 
-		virtual void createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<InstanceResolver>> complete);
+		virtual Fiber::Fiber createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<InstanceResolver>> complete);
 	public:
 		// needed by parser
 		std::tuple<
@@ -35,10 +40,12 @@ namespace Omni {
 		void setOption(const std::string & key, const std::string & value);
 
 		//#begin-region static configure fields before start
-		std::vector<int> domains = {};
-		std::string address = "localhost";
+		enum class Family { IPv4, IPv6 };
+		std::optional<std::set<Family>> family = {};
+		std::optional<bool> hasHost;
+		std::optional<bool> hasService;
+		std::string host = "localhost";
 		std::string service = "omnicat";
-		unsigned short port = -1;
 		//#end-region
 
 		std::shared_ptr<Registry> getRegistry() { return registry; }

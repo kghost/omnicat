@@ -10,8 +10,10 @@
 #include "InstanceTcpListener.h"
 
 namespace Omni {
-	void EntityTcpListener::createInstance(boost::asio::io_service & io, Completion<std::shared_ptr<Instance>> complete) {
-		complete.ok(std::make_shared<InstanceTcpListener>(shared_from_this(), io));
+	void EntityTcpListener::prepare() { resolver->prepare();  }
+
+	Fiber::Fiber EntityTcpListener::createInstance(boost::asio::io_service & io, Completion<std::shared_ptr<Instance>> complete) {
+		return complete(std::make_shared<InstanceTcpListener>(shared_from_this(), io));
 	}
 
 	Parser::Type EntityTcpListener::groupOptionType(const std::string & key) {

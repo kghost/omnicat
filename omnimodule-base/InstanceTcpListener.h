@@ -17,8 +17,8 @@ namespace Omni {
 		InstanceTcpListener(std::shared_ptr<EntityTcpListener> entity, boost::asio::io_service & io);
 		virtual ~InstanceTcpListener();
 
-		virtual void start(boost::asio::io_service& io, Completion<> complete);
-		virtual void stop(boost::asio::io_service& io, Completion<> complete);
+		virtual Fiber::Fiber start(boost::asio::io_service& io, Completion<> complete);
+		virtual Fiber::Fiber stop(boost::asio::io_service& io, Completion<> complete);
 	private:
 		std::shared_ptr<EntityTcpListener> entity;
 		boost::asio::ip::tcp::socket sock;

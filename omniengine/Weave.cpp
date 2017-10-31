@@ -3,6 +3,7 @@
 #include "Weave.h"
 
 #include <list>
+#include <stack>
 #include <functional>
 
 namespace Omni {
@@ -26,35 +27,53 @@ namespace Omni {
 		//  post-pause is a continuation object. Many language can auto generate it by using CPS transform, but in c++ world, we need to write it manually.
 		//  CPS form: instead returns a value , pausable returns a future
 
-
-#ifndef NDEBUG
-		typedef int Fiber;
-#else
-		typedef void Fiber;
-#endif
-
 		std::list<FiberContext> fibers;
 
-		template<template <typename Result> class Continuation, typename Result, typename ... Args>
-		using CodePiece = std::function<Fiber(Args && ..., Continuation<Result>&&)>;
+		class FiberContext {
+		public:
+			decltype(fibers)::const_iterator me;
+			std::stack<FiberExceptionHandler*> ehs;
+		};
+		thread_local FiberContext* current;
 
-		template<typename ... Result>
-		void run(std::function<void()>&& body) {
-			auto fc = fibers.emplace_back();
-			fc.me = fibers.back();
-			ScheduleOutFinal(
-				ScheduleIn(fc, body)
-			);
+		Fiber unwind(std::stack<FiberExceptionHandler*>& ehs, std::exception_ptr && eptr) {
+			FiberExceptionHandler* n = ehs.top();
+			ehs.pop();
+			try {
+				return n->handle(std::move(eptr));
+			} catch (...) {
+				return unwind(ehs, std::current_exception());
+			}
 		}
 
-		template<template <typename Result> class Continuation>
-		Fiber ScheduleIn(FiberContext& context, Continuation<>&& continuation) {
+		Fiber unwind(std::exception_ptr && eptr) {
+			return unwind(current->ehs, std::move(eptr));
 		}
 
-		Fiber ScheduleOut() {
+		Fiber create() {
+			auto fc = fibers.emplace_front();
+			fc.me = fibers.begin();
+			return std::make_shared<FiberA>(&fc);
 		}
 
-		void ScheduleOutFinal(Fiber fiber) {
+		Fiber wrap(std::function<Fiber()>&& continuation) {
+			//try {
+				return continuation();
+			//} catch (...) {
+			//	return unwind(std::current_exception());
+			//}
 		}
+
+		void FiberA::restart(std::function<Fiber()>&& continuation) {
+			current = ctxt;
+			Fiber fiber = wrap(std::move(continuation));
+		}
+
+		SHARED void run(CodePiece<std::function<Fiber()>&&>&& body) {
+			auto fiber = create();
+			fiber->restart([body = std::move(body)]{return body([] { return nullptr; });});
+		}
+
+		Fiber ScheduleOut() { return std::make_shared<FiberA>(current); }
 	}
 }

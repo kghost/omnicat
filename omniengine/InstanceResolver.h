@@ -16,9 +16,9 @@ namespace Omni {
 		virtual ~InstanceResolver();
 
 		typedef std::tuple<std::type_info, boost::any> EndpointT;
-		virtual void resolve(boost::asio::io_service & io, Completion<std::vector<EndpointT>&&> complete) = 0;
+		virtual Fiber::Fiber resolve(boost::asio::io_service & io, bool passive, Completion<std::vector<EndpointT>&&> complete) = 0;
 
-		virtual void start(boost::asio::io_service& io, Completion<> complete);
-		virtual void stop(boost::asio::io_service& io, Completion<> complete);
+		virtual Fiber::Fiber start(boost::asio::io_service& io, Completion<> complete);
+		virtual Fiber::Fiber stop(boost::asio::io_service& io, Completion<> complete);
 	};
 }

@@ -16,16 +16,12 @@ namespace Omni {
 	void start(std::shared_ptr<Entity> e) {
 		boost::asio::io_service io;
 
-		run([] {
-			e->createInstance(io, {
-				[&io](std::shared_ptr<Instance> o) {
-					o->start(io, {
-						[]() {},
-					});
-				},
+		Fiber::run([e, &io](auto&& exit) {
+			return e->createInstance(io, [&io, exit = std::move(exit)](std::shared_ptr<Instance> && o) mutable {
+				return o->start(io, std::move(exit));
 			});
 		});
 
-		io_service.run();
+		io.run();
 	}
 }

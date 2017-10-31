@@ -6,10 +6,10 @@
 #include "Weave.h"
 
 namespace Omni {
-	template<template <typename Result> class Continuation, typename Result>
-	using ExceptionHandler = CodePiece<Continuation, Result, std::exception_ptr>;
+	template<typename Continuation>
+	using ExceptionHandler = template CodePiece<Continuation, std::exception_ptr>;
 
-	template<template <typename Result> class Continuation, typename Result>
+	template<typename Continuation, typename Result>
 	class FiberExceptionHandlerImpl {
 		public:
 			FiberExceptionHandlerImpl(
@@ -22,10 +22,10 @@ namespace Omni {
 			virtual Fiber handle(std::exception_ptr && eptr) { uninstall(); handler(eptr, std::move(continuation)); }
 		private:
 			ExceptionHandler<Continuation, Result> handler;
-			Continuation<Result> continuation;
+			Continuation continuation;
 	};
 
-	template<template <typename Result> class Continuation, typename Result>
+	template<typename Continuation, typename Result>
 	class TryScope : private boost::noncopyable {
 		public:
 			TryScope(
@@ -44,11 +44,11 @@ namespace Omni {
 		template<template <typename Result2> class Continuation> using type = TryScope<Continuation, Result>;
 	};
 
-	template<template <typename Result> class Continuation, typename Result>
+	template<typename Continuation, typename Result>
 	Fiber WithTry(
 		CodePiece<TryScopeContinuation<Result>::template type, Result>&& body,
 		ExceptionHandler<Continuation, Result>&& handler,
-		Continuation<Result>&& continuation
+		Continuation&& continuation
 	) {
 		return body(TryScope<Continuation, Result>(handler, continuation));
 	}

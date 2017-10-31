@@ -23,8 +23,8 @@ namespace Omni {
 						auto address = toUTF8(ws.substr(0, i));
 						auto service = toUTF8(ws.substr(i + 1));
 						auto resolver = std::dynamic_pointer_cast<EntityTcpResolver>(owner.getRegistry()->createEntity("TCP-RESOLVER"));
-						if (!bool(resolver)) OMNI_INTERNAL_ERROR;
-						resolver->setOption("address", address);
+						assert(resolver);
+						resolver->setOption("host", address);
 						resolver->setOption("service", service);
 						owner.resolver = resolver;
 						return {};

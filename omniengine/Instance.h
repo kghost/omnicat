@@ -16,7 +16,7 @@ namespace Omni {
 	class SHARED Instance : private boost::noncopyable {
 	public:
 		virtual ~Instance() {}
-		virtual void start(boost::asio::io_service& io, Completion<> complete) = 0;
-		virtual void stop(boost::asio::io_service& io, Completion<> complete) = 0;
+		virtual Fiber::Fiber start(boost::asio::io_service& io, Completion<> complete) = 0;
+		virtual Fiber::Fiber stop(boost::asio::io_service& io, Completion<> complete) = 0;
 	};
 }

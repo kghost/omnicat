@@ -2,6 +2,8 @@
 
 #include "OptionsTemplate.h"
 
+#include "../omniengine/Exception.h"
+
 namespace Omni {
 	template<typename OwnerT>
 	class OptionsResolver: public OptionsTemplate<OptionsResolver<OwnerT>> {
@@ -11,17 +13,30 @@ namespace Omni {
 		typename ParentT::DefineT define = {
 			{
 				"family", {
-					Parser::Type::LIST,{"<address>", "The address to resolve", "localhost"},
+					Parser::Type::LIST,{"[ family2, family2 ]", "The address family to use", "[ ipv4, ipv6 ]"},
 					typename ParentT::FlagT([this]() -> typename ParentT::SetT {
 						return {};
 					})
 				}
 			},
 			{
-				"address", {
-					Parser::Type::STRING, {"<address>", "The address to resolve", "localhost"},
+				"host", {
+					Parser::Type::STRING, {"<string>", "The host to resolve", "localhost"},
 					typename ParentT::StringT([this](const std::string & value) -> typename ParentT::SetT {
-						owner.address = value;
+						if (bool(owner.hasHost)) throw ExceptionInvalidArgument("host and address can't be set multiple times :" + value);
+						owner.hasHost = false;
+						owner.host = value;
+						return {};
+					})
+				}
+			},
+			{
+				"address",{
+					Parser::Type::STRING,{"<address>", "Directly set address, skip resolve"},
+					typename ParentT::StringT([this](const std::string & value) -> typename ParentT::SetT {
+						if (bool(owner.hasHost)) throw ExceptionInvalidArgument("host and address can't be set multiple times :" + value);
+						owner.hasHost = true;
+						owner.host = value;
 						return {};
 					})
 				}
@@ -30,6 +45,8 @@ namespace Omni {
 				"service", {
 					Parser::Type::STRING, {"<string>", "The service to resolve", "omnicat"},
 					typename ParentT::StringT([this](const std::string & value) -> typename ParentT::SetT {
+						if (bool(owner.hasService)) throw ExceptionInvalidArgument("service and port can't be set multiple times :" + value);
+						owner.hasService = false;
 						owner.service = value;
 						return {};
 					})
@@ -37,9 +54,11 @@ namespace Omni {
 			},
 			{
 				"port", {
-					Parser::Type::STRING, {"<number>", "Manually set the port number, skip resolve service"},
+					Parser::Type::STRING, {"<number>", "Directly set port number, skip resolve"},
 					typename ParentT::StringT([this](const std::string & value) -> typename ParentT::SetT {
-						owner.port = std::stoi(value);
+						if (bool(owner.hasService)) throw ExceptionInvalidArgument("service and port can't be set multiple times :" + value);
+						owner.hasService = true;
+						owner.service = value;
 						return {};
 					})
 				}

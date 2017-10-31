@@ -20,9 +20,9 @@ int main(int argc, char *argv[], char *envp[])
 #endif
 {
 #ifdef USE_WIDECHAR_API
-	//::_setmode(_fileno(stdin), _O_U16TEXT);
-	//::_setmode(_fileno(stdout), _O_U16TEXT);
-	//::_setmode(_fileno(stderr), _O_U16TEXT);
+	::_setmode(_fileno(stdin), _O_U16TEXT);
+	::_setmode(_fileno(stdout), _O_U16TEXT);
+	::_setmode(_fileno(stderr), _O_U16TEXT);
 #endif
 	try {
 		auto registry = Omni::getRegistry();

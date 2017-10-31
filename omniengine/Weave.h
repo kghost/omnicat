@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cassert>
-#include <list>
-#include <stack>
 #include <functional>
+
+#include "shared.h"
 
 namespace Omni {
 	namespace Fiber {
@@ -26,12 +26,8 @@ namespace Omni {
 		//  post-pause is a continuation object. Many language can auto generate it by using CPS transform, but in c++ world, we need to write it manually.
 		//  CPS form: instead returns a value , pausable returns a future
 
-
-#ifndef NDEBUG
-		typedef int Fiber;
-#else
-		typedef void Fiber;
-#endif
+		class FiberA;
+		typedef std::shared_ptr<FiberA> Fiber;
 
 		class FiberExceptionHandler {
 			public:
@@ -52,29 +48,20 @@ namespace Omni {
 		};
 
 		class FiberContext ;
-		extern std::list<FiberContext> fibers;
-		class FiberContext {
-			public:
-				decltype(fibers)::const_iterator me;
-				std::stack<FiberExceptionHandler*> ehs;
+		class SHARED FiberA {
+		public:
+			FiberA(FiberContext* ctxt) : ctxt(ctxt) {}
+			void restart(std::function<Fiber()>&& continuation);
+		private:
+			FiberContext* ctxt;
 		};
 
-		extern thread_local FiberContext* current;
+		template<typename Continuation, typename ... Args>
+		using CodePiece = std::function<Fiber(Args && ..., Continuation&&)>;
 
-		template<template <typename Result> class Continuation, typename Result, typename ... Args>
-		using CodePiece = std::function<Fiber(Args && ..., Continuation<Result>&&)>;
-
-		void run(std::function<void()>&& body);
-
-		template<template <typename Result> class Continuation, typename ... Args>
-		Fiber ScheduleIn(FiberContext& context, Continuation<Args ...>&& continuation) {
-			current = &context;
-		}
-
-		Fiber ScheduleOut() {
-		}
-
-		void ScheduleOutFinal(Fiber fiber) {
-		}
+		SHARED void run(CodePiece<std::function<Fiber()>>&& body);
+		SHARED Fiber ScheduleOut();
 	}
+
+	template<typename ... Result> using Completion = std::function<Fiber::Fiber(Result && ...)>&&;
 }

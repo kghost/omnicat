@@ -173,6 +173,8 @@
     <ClInclude Include="Symbol.h" />
     <ClInclude Include="SymbolTable.h" />
     <ClInclude Include="utilities.h" />
+    <ClInclude Include="WeaverAdapterAsio.h" />
+    <ClInclude Include="WeaverException.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -185,6 +187,7 @@
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Resolver.cpp" />
     <ClCompile Include="utilities.cpp" />
+    <ClCompile Include="WeaverAdapterAsio.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
