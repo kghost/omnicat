@@ -19,7 +19,7 @@ namespace Omni {
 		if (family.find(decltype(entity)::element_type::Family::IPv4) != family.end()) {
 			auto q = decltype(o)::element_type::query(boost::asio::ip::tcp::v4(), entity->host, entity->service, flags);
 			return Fiber::Asio::yield<boost::asio::ip::tcp::resolver::iterator>(
-				[&](auto handler) {
+				[&](auto&& handler) -> void {
 					o->async_resolve(q, handler([complete = std::move(complete)](boost::asio::ip::tcp::resolver::iterator iterator) {
 						return complete(std::vector<EndpointT>());
 					}));

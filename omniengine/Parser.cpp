@@ -14,7 +14,9 @@
 #ifndef NDEBUG
 #include "utilities.h"
 #define BOOST_SPIRIT_DEBUG
+#ifdef USE_WIDECHAR_API
 #define BOOST_SPIRIT_DEBUG_OUT Omni::utf8cout
+#endif
 #include <boost/spirit/include/classic_debug.hpp>
 #endif
 #include <boost/spirit/include/qi.hpp>

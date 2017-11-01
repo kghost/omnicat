@@ -1,6 +1,9 @@
 #pragma once
 
+#include <tuple>
+#include <functional>
 #include <boost/core/noncopyable.hpp>
+#include <boost/mpl/identity.hpp>
 
 #include "Weave.h"
 #include "Exception.h"
@@ -25,10 +28,14 @@ namespace Omni {
 #pragma warning(pop)
 			};
 
+			template<typename ... Result> using ProvidedHandler = typename std::function<Fiber(Result ...)>;
+			template<typename ... Result> using AsioHandler = typename std::function<void(const boost::system::error_code& ec, Result ...)>;
+			template<typename ... Result> using Transformer = std::function<AsioHandler<Result ...>(ProvidedHandler<Result ...>&&)>;
+
 			template<typename ... Result>
-			Fiber yield(std::function<void(std::function<std::function<void(const boost::system::error_code& ec, Result ...)>(std::function<Fiber(Result ...)>)>&&)>&& body) {
+			Fiber yield(typename boost::mpl::identity<std::function<void(Transformer<Result ...>&&)>>::type && body) {
 				auto fiber = ::Omni::Fiber::ScheduleOut();
-				body([&](std::function<Fiber(Result ...)>&& wrapped) -> std::function<void(const boost::system::error_code& ec, Result ...)> {
+				body([&](ProvidedHandler<Result ...>&& wrapped) -> AsioHandler<Result ...> {
 					return [fiber, wrapped = std::move(wrapped)](const boost::system::error_code& ec, Result && ... result) -> void {
 						fiber->restart([&]{
 							if (ec) throw ExceptionUnhandledError(ec);
