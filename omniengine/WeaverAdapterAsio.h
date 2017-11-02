@@ -34,16 +34,16 @@ namespace Omni {
 
 			template<typename ... Result>
 			Fiber yield(typename boost::mpl::identity<std::function<void(Transformer<Result ...>&&)>>::type && body) {
-				auto fiber = ::Omni::Fiber::ScheduleOut();
-				body([&](ProvidedHandler<Result ...>&& wrapped) -> AsioHandler<Result ...> {
-					return [fiber, wrapped = std::move(wrapped)](const boost::system::error_code& ec, Result && ... result) -> void {
-						fiber->restart([&]{
-							if (ec) throw ExceptionUnhandledError(ec);
-							return wrapped(std::forward<Result>(result)...);
-						});
-					};
+				return ::Omni::Fiber::yield([&](auto&& restart) {
+					return body([&](ProvidedHandler<Result ...>&& wrapped) -> AsioHandler<Result ...> {
+						return [restart = std::move(restart), wrapped = std::move(wrapped)](const boost::system::error_code& ec, Result && ... result) -> void {
+							restart([&]{
+								if (ec) throw ExceptionUnhandledError(ec);
+								return wrapped(std::forward<Result>(result)...);
+							});
+						};
+					});
 				});
-				return fiber;
 			};
 		}
 	}

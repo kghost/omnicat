@@ -17,6 +17,8 @@ namespace Omni {
 
 		virtual Fiber::Fiber resolve(boost::asio::io_service & io, bool passive, Completion<std::vector<InstanceResolver::EndpointT>&&> complete);
 	private:
+		Fiber::Fiber resolve(boost::asio::io_service & io, boost::asio::ip::tcp::resolver::query &q, Completion<std::vector<InstanceResolver::EndpointT>&&> complete);
+
 		std::shared_ptr<EntityTcpResolver> entity;
 		boost::asio::ip::tcp::resolver resolver;
 	};
