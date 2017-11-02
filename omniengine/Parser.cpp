@@ -32,6 +32,7 @@
 #include <boost/phoenix/bind.hpp>
 #include <boost/phoenix/operator.hpp>
 
+#include "encoding.h"
 #include "ParserSupport.h"
 
 namespace Omni {

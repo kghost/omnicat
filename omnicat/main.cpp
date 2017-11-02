@@ -6,6 +6,7 @@
 #endif
 #include <stdio.h>
 
+#include "../omniengine/encoding.h"
 #include "../omniengine/Registry.h"
 #include "../omniengine/Entity.h"
 #include "../omniengine/Parser.h"
@@ -27,7 +28,7 @@ int main(int argc, char *argv[], char *envp[])
 	try {
 		auto registry = Omni::getRegistry();
 		registry->loadModule("omnimodule-base");
-		auto p = Omni::Parser::parse(registry, toUTF8(
+		auto p = Omni::Parser::parse(registry, Omni::toUTF8(
 			L" TCP-LISTEN { fork, localhost:12345 ( a b )}"
 		));
 		auto e = p->getResult();
@@ -35,7 +36,7 @@ int main(int argc, char *argv[], char *envp[])
 		start(e);
 	} catch (const Omni::Exception & exception) {
 #ifdef USE_WIDECHAR_API
-		std::wcerr << fromUTF8(std::string(exception.what())) << std::endl;
+		std::wcerr << Omni::fromUTF8(std::string(exception.what())) << std::endl;
 #else
 		std::cerr << exception.what() << std::endl;
 #endif

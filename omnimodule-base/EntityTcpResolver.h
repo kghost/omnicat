@@ -2,18 +2,12 @@
 
 #include <tuple>
 #include <set>
-#include <boost/asio.hpp>
+#include <boost/asio/io_service.hpp>
 
 #include "../omniengine/ParserSupport.h"
 #include "../omniengine/Resolver.h"
 #include "../omniengine/Weave.h"
 #include "OptionsResolver.h"
-
-namespace boost {
-	namespace asio {
-		class io_service;
-	}
-}
 
 namespace Omni {
 	class Registry;

@@ -15,6 +15,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "encoding.h"
 #include "Module.h"
 #include "Factory.h"
 

@@ -75,6 +75,9 @@
     <ClInclude Include="WeaverException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="encoding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -108,6 +111,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WeaverAdapterAsio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="encoding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

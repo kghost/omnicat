@@ -29,7 +29,3 @@
 #else
     #pragma warning Unknown dynamic link import/export semantics.
 #endif
-
-static std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-static inline std::wstring fromUTF8(const std::string & s) { return converter.from_bytes(s); }
-static inline std::string toUTF8(const std::wstring & s) { return converter.to_bytes(s); }

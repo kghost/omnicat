@@ -1,19 +1,14 @@
 #pragma once
 
 #include <tuple>
-#include <boost/asio.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/ip/tcp.hpp>
 
 #include "../omniengine/ParserSupport.h"
 #include "../omniengine/Entity.h"
 #include "../omniengine/Weave.h"
 #include "OptionsTcpListener.h"
 #include "OptionsListener.h"
-
-namespace boost {
-	namespace asio {
-		class io_service;
-	}
-}
 
 namespace Omni {
 	class Registry;

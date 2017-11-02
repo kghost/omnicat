@@ -2,15 +2,10 @@
 
 #include <memory>
 #include <boost/core/noncopyable.hpp>
+#include <boost/asio/io_service.hpp>
 
 #include "Weave.h"
 #include "shared.h"
-
-namespace boost {
-	namespace asio {
-		class io_service;
-	}
-}
 
 namespace Omni {
 	class Instance;

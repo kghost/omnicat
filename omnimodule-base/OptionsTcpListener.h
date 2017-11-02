@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../omniengine/encoding.h"
 #include "../omniengine/Registry.h"
 #include "../omniengine/Exception.h"
 #include "OptionsTemplate.h"

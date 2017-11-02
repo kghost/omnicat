@@ -1,14 +1,10 @@
 #pragma once
 
-#include <boost/asio.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/ip/tcp.hpp>
+
 #include "../omniengine/Instance.h"
 #include "../omniengine/Weave.h"
-
-namespace boost {
-	namespace asio {
-		class io_service;
-	}
-}
 
 namespace Omni {
 	class EntityTcpListener;

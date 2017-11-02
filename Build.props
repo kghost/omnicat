@@ -3,12 +3,14 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IncludePath>$(BoostPath);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>$(BoostPath)\stage\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+    <LocalDebuggerEnvironment>PATH=$(BoostPath)\stage\lib;%PATH%$(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
+    <IncludePath>$(BoostPath);$(IncludePath)</IncludePath>
+    <LibraryPath>$(BoostPath)\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>BOOST_ALL_DYN_LINK;BOOST_NO_ANSI_APIS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />
