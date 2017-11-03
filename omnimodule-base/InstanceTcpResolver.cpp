@@ -11,7 +11,7 @@ namespace Omni {
 
 	Fiber::Fiber InstanceTcpResolver::resolve(boost::asio::io_service & io, boost::asio::ip::tcp::resolver::query &q, Completion<std::vector<InstanceResolver::EndpointT>&&> complete) {
 		return Fiber::Asio::yield<boost::asio::ip::tcp::resolver::iterator>(
-			[&](auto&& handler) -> void {
+			[&](auto&& handler) {
 				auto o = std::make_shared<boost::asio::ip::tcp::resolver>(io);
 				o->async_resolve(q, handler([complete = std::move(complete), o](boost::asio::ip::tcp::resolver::iterator iterator) {
 					return complete(std::vector<EndpointT>());
@@ -25,7 +25,7 @@ namespace Omni {
 		if (passive) flags |= boost::asio::ip::resolver_query_base::flags::passive;
 		if (entity->hasHost.value()) flags |= boost::asio::ip::resolver_query_base::flags::numeric_host;
 		if (entity->hasService.value()) flags |= boost::asio::ip::resolver_query_base::flags::numeric_service;
-		auto result = std::unique_ptr<std::vector<EndpointT>>();
+		auto result = std::make_unique<std::vector<EndpointT>>();
 		auto& familyies = entity->family.value();
 		std::vector<Fiber::Fiber> children;
 		std::transform(familyies.begin(), familyies.end(), std::back_inserter(children),

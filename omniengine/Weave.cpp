@@ -27,67 +27,86 @@ namespace Omni {
 		//  post-pause is a continuation object. Many language can auto generate it by using CPS transform, but in c++ world, we need to write it manually.
 		//  CPS form: instead returns a value , pausable returns a future
 
-		class FiberContext;
-		std::list<FiberContext> fibers;
-		class FiberContext {
+		class FiberSwitch {
 		public:
-			decltype(fibers)::const_iterator me;
-			std::stack<FiberExceptionHandler*> ehs;
-		};
-		thread_local FiberContext* current;
-
-		// Short living object for user to operate the fiber.
-		class FiberSwitchImpl : public FiberSwitch {
-		public:
-			FiberSwitchImpl(FiberContext* ctxt) : ctxt(ctxt) {}
-			virtual ~FiberSwitchImpl() {}
-		private:
-			FiberContext* ctxt;
+			virtual ~FiberSwitch() {}
+			virtual std::shared_ptr<FiberSwitch> next() = 0;
+			virtual void unwind(std::exception_ptr && eptr) = 0;
 		};
 
-		Fiber unwind(std::stack<FiberExceptionHandler*>& ehs, std::exception_ptr && eptr) {
-			FiberExceptionHandler* n = ehs.top();
-			ehs.pop();
+		class FiberSwitchEnd : public FiberSwitch {
+		public:
+			virtual ~FiberSwitchEnd() {}
+			virtual std::shared_ptr<FiberSwitch> next() = 0;
+			virtual void unwind(std::exception_ptr && eptr) {}
+		};
+
+		class FiberSwitchYield : public FiberSwitch {
+		public:
+			virtual ~FiberSwitchYield() {}
+			virtual void unwind(std::exception_ptr && eptr) {
+				next()->unwind(std::move(eptr));
+			}
+			std::shared_ptr<FiberSwitch> continued ;
+			bool switched = false;
+		};
+
+		class FiberSwitchMain : public FiberSwitch {
+		public:
+			virtual ~FiberSwitchMain() {}
+			virtual void unwind(std::exception_ptr && eptr) {
+				std::rethrow_exception(eptr);
+			}
+		};
+
+		class FiberSwitchThread : public FiberSwitchMain {
+		public:
+			virtual ~FiberSwitchThread() {}
+			virtual void unwind(std::exception_ptr && eptr) {
+				std::rethrow_exception(eptr);
+			}
+		};
+
+		static Fiber schedule(std::shared_ptr<FiberSwitch>&& fiber, std::function<void(Restart&&)>&& finalize) {
+		}
+
+		SHARED void run(CodePiece<Continuation>&& body) {
+			auto fiber = std::make_shared<FiberSwitchMain>();
 			try {
-				return n->handle(std::move(eptr));
+				auto inner = body([] { return std::make_shared<FiberSwitchEnd>(); });;
 			} catch (...) {
-				return unwind(ehs, std::current_exception());
+				return fiber->unwind(std::current_exception());
 			}
 		}
 
-		Fiber unwind(std::exception_ptr && eptr) {
-			return unwind(current->ehs, std::move(eptr));
+		SHARED Fiber fork(CodePiece<Continuation>&& body) {
+			auto fiber = std::make_shared<FiberSwitchThread>();
+			in(fiber, [body = std::move(body)]{return body([] { return nullptr; });});
 		}
 
-		Fiber create() {
-			auto fc = fibers.emplace_front();
-			fc.me = fibers.begin();
-			return std::unique_ptr<FiberSwitch>(new FiberSwitchImpl(&fc));
-		}
-
-		Fiber in(std::function<Fiber()>&& continuation) {
-			try {
-				return continuation();
-			} catch (...) {
-				return unwind(std::current_exception());
+		SHARED void join(Fiber fiber, Continuation body) {
+			return yield(std::function<void(Restart&&)>&& finalize) {
+				return schedule(std::make_shared<FiberSwitch>(), std::move(finalize));
 			}
 		}
 
-		SHARED void run(CodePiece<std::function<Fiber()>&&>&& body) {
-			auto fiber = create();
-			in([body = std::move(body)]{return body([] { return nullptr; });});
-		}
-
-		Fiber fork() {
-			create();
-		}
-
-		SHARED Fiber yield(std::function<void(std::function<void(Restart&&)>)>&& finalize) {
-			// out
-			finalize([](Restart&& continuation) -> void {
-				in(std::move(continuation));
+		SHARED Fiber yield(std::function<void(Restart&&)>&& finalize) {
+			auto fiber = std::make_shared<FiberSwitchYield>();
+			finalize([outer = fiber](Continuation continuation) -> void {
+				if (!outer->switched) {
+					outer->continued = continuation();
+				} else {
+					auto next = outer->next();
+					outer.reset();
+					try {
+						continuation();
+					} catch (...) {
+						return outer->unwind(std::current_exception());
+					}
+				}
 			});
-			return Fiber();
+			fiber->switched = true;
+			return fiber->continued ? fiber->continued : fiber;
 		}
 	}
 }

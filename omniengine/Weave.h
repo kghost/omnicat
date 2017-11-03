@@ -27,11 +27,8 @@ namespace Omni {
 		//  post-pause is a continuation object. Many language can auto generate it by using CPS transform, but in c++ world, we need to write it manually.
 		//  CPS form: instead returns a value , pausable returns a future
 
-		class SHARED FiberSwitch {
-			public:
-				virtual SHARED_MEMBER ~FiberSwitch() = 0;
-		};
-		typedef std::unique_ptr<FiberSwitch> Fiber;
+		class FiberSwitch;
+		typedef std::shared_ptr<FiberSwitch> Fiber;
 
 		class FiberExceptionHandler {
 			public:
@@ -55,11 +52,13 @@ namespace Omni {
 		template<typename Continuation, typename ... Args>
 		using CodePiece = std::function<Fiber(Args && ..., Continuation&&)>;
 
-		SHARED void run(CodePiece<std::function<Fiber()>>&& body);
-		SHARED Fiber fork(CodePiece<std::function<Fiber()>>&& body);
+		typedef std::function<Fiber()>&& Continuation;
 
-		typedef std::function<Fiber()> Restart;
-		SHARED Fiber yield(std::function<void(std::function<void(Restart&&)>)>&& finalize);
+		SHARED void run(CodePiece<Continuation>&& body);
+		SHARED Fiber fork(CodePiece<Continuation>&& body);
+
+		typedef std::function<void(Continuation&&)> Restart;
+		SHARED Fiber yield(std::function<void(Restart&&)>&& finalize);
 	}
 
 	template<typename ... Result> using Completion = std::function<Fiber::Fiber(Result && ...)>&&;
