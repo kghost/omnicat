@@ -30,22 +30,20 @@ namespace Omni {
 		class FiberSwitch {
 		public:
 			virtual ~FiberSwitch() {}
-			virtual std::shared_ptr<FiberSwitch> next() = 0;
-			virtual void unwind(std::exception_ptr && eptr) = 0;
+			virtual Fiber unwind(std::exception_ptr && eptr) = 0;
 		};
 
 		class FiberSwitchEnd : public FiberSwitch {
 		public:
 			virtual ~FiberSwitchEnd() {}
-			virtual std::shared_ptr<FiberSwitch> next() = 0;
-			virtual void unwind(std::exception_ptr && eptr) {}
+			virtual Fiber unwind(std::exception_ptr && eptr) {}
 		};
 
 		class FiberSwitchYield : public FiberSwitch {
 		public:
 			virtual ~FiberSwitchYield() {}
-			virtual void unwind(std::exception_ptr && eptr) {
-				next()->unwind(std::move(eptr));
+			virtual Fiber unwind(std::exception_ptr && eptr) {
+				return unwind(std::move(eptr));
 			}
 			std::shared_ptr<FiberSwitch> continued ;
 			bool switched = false;
@@ -54,17 +52,20 @@ namespace Omni {
 		class FiberSwitchMain : public FiberSwitch {
 		public:
 			virtual ~FiberSwitchMain() {}
-			virtual void unwind(std::exception_ptr && eptr) {
+			virtual Fiber unwind(std::exception_ptr && eptr) {
 				std::rethrow_exception(eptr);
 			}
 		};
 
 		class FiberSwitchThread : public FiberSwitchMain {
 		public:
+			FiberSwitchThread() {}
 			virtual ~FiberSwitchThread() {}
-			virtual void unwind(std::exception_ptr && eptr) {
+			virtual Fiber unwind(std::exception_ptr && eptr) {
 				std::rethrow_exception(eptr);
 			}
+
+			bool done = false;
 		};
 
 		static Fiber schedule(std::shared_ptr<FiberSwitch>&& fiber, std::function<void(Restart&&)>&& finalize) {
@@ -75,38 +76,42 @@ namespace Omni {
 			try {
 				auto inner = body([] { return std::make_shared<FiberSwitchEnd>(); });;
 			} catch (...) {
-				return fiber->unwind(std::current_exception());
-			}
-		}
-
-		SHARED Fiber fork(CodePiece<Continuation>&& body) {
-			auto fiber = std::make_shared<FiberSwitchThread>();
-			in(fiber, [body = std::move(body)]{return body([] { return nullptr; });});
-		}
-
-		SHARED void join(Fiber fiber, Continuation body) {
-			return yield(std::function<void(Restart&&)>&& finalize) {
-				return schedule(std::make_shared<FiberSwitch>(), std::move(finalize));
+				fiber->unwind(std::current_exception());
 			}
 		}
 
 		SHARED Fiber yield(std::function<void(Restart&&)>&& finalize) {
 			auto fiber = std::make_shared<FiberSwitchYield>();
-			finalize([outer = fiber](Continuation continuation) -> void {
+			finalize([outer = fiber](Continuation continuation) mutable -> void {
 				if (!outer->switched) {
 					outer->continued = continuation();
 				} else {
-					auto next = outer->next();
 					outer.reset();
 					try {
 						continuation();
 					} catch (...) {
-						return outer->unwind(std::current_exception());
+						outer->unwind(std::current_exception());
 					}
 				}
 			});
 			fiber->switched = true;
 			return fiber->continued ? fiber->continued : fiber;
+		}
+
+		SHARED Fiber fork(CodePiece<Continuation>&& body) {
+			auto fiber = std::make_shared<FiberSwitchThread>();
+			try {
+				auto inner = body([fiber] { fiber->done = true; return std::make_shared<FiberSwitchEnd>(); });
+			} catch (...) {
+				return fiber->unwind(std::current_exception());
+			}
+			return fiber;
+		}
+
+		SHARED Fiber join(Fiber fiber, Continuation body) {
+			if (fiber)
+			return yield([&](::Omni::Fiber::Restart&& restart) -> void {
+			});
 		}
 	}
 }
