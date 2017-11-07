@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <memory>
+#include <stack>
 #include <functional>
 
 #include "shared.h"
@@ -52,13 +53,17 @@ namespace Omni {
 		template<typename Continuation, typename ... Args>
 		using CodePiece = std::function<Fiber(Args && ..., Continuation&&)>;
 
-		typedef std::function<Fiber()>&& Continuation;
-
-		SHARED void run(CodePiece<Continuation>&& body);
-		SHARED Fiber fork(CodePiece<Continuation>&& body);
+		typedef std::function<Fiber()> ContinuationType;
+		typedef ContinuationType&& Continuation;
 
 		typedef std::function<void(Continuation&&)> Restart;
 		SHARED Fiber yield(std::function<void(Restart&&)>&& finalize);
+
+		SHARED void run(CodePiece<Continuation>&& body);
+		SHARED Fiber fork(CodePiece<Continuation>&& body);
+		SHARED Fiber join(Fiber fiber, Continuation continuation);
+
+		SHARED Fiber join(std::stack<Fiber> &&fs,  Continuation continuation);
 	}
 
 	template<typename ... Result> using Completion = std::function<Fiber::Fiber(Result && ...)>&&;
