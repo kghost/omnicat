@@ -8,14 +8,25 @@
 #include "EntityTcpResolver.h"
 
 namespace Omni {
-	InstanceTcpResolver::InstanceTcpResolver(std::shared_ptr<EntityTcpResolver> entity, boost::asio::io_service & io) : entity(entity), resolver(io) {}
+	InstanceTcpResolver::InstanceTcpResolver(std::shared_ptr<EntityTcpResolver> entity, boost::asio::io_service & io) : entity(entity), resolver(io) {
+		lg.add_attribute("Component", boost::log::attributes::constant<std::string>((boost::format("%1%(%2%)") % typeid(*this).name() % this).str()));
+	}
 	InstanceTcpResolver::~InstanceTcpResolver() {}
 
 	Fiber::Fiber InstanceTcpResolver::resolve(boost::asio::io_service & io, boost::asio::ip::tcp::resolver::query &q, Completion<EndpointsT&&> complete) {
 		return Fiber::Asio::yield<boost::asio::ip::tcp::resolver::iterator>(
 			[&](auto&& handler) {
 				auto o = std::make_shared<boost::asio::ip::tcp::resolver>(io);
-				o->async_resolve(q, handler([complete = std::move(complete), o](boost::asio::ip::tcp::resolver::iterator iterator) {
+
+				boost::log::record rec = lg.open_record(boost::log::keywords::severity = boost::log::trivial::severity_level::info);
+				if (rec) {
+					boost::log::record_ostream strm(rec);
+					strm << " Resolving: " << q;
+					for (auto i : as) strm << ' ' << i.endpoint();
+					lg.push_record(boost::move(rec));
+				}
+
+				o->async_resolve(q, handler([me = enable_shared_from_this(), complete = std::move(complete), o](boost::asio::ip::tcp::resolver::iterator iterator) {
 					typename InstanceTcpResolver::EndpointsType v;
 					auto end = decltype(iterator)();
 					std::transform(iterator, end, std::back_inserter(v), [](auto i) { return i; });

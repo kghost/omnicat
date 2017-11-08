@@ -1,6 +1,6 @@
 bin_PROGRAMS=omnicat
 
-omnicat_SOURCES=main.cpp IoService.cpp
+omnicat_SOURCES=main.cpp log.cpp IoService.cpp
 
 AM_CFLAGS = -DBOOST_ALL_DYN_LINK $(PTHREAD_CFLAGS) $(BOOST_CPPFLAGS)
 AM_CPPFLAGS = -DBOOST_ALL_DYN_LINK $(PTHREAD_CFLAGS) $(BOOST_CPPFLAGS)

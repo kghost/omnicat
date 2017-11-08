@@ -24,5 +24,7 @@ namespace Omni {
 
 		std::shared_ptr<EntityTcpResolver> entity;
 		boost::asio::ip::tcp::resolver resolver;
+
+		boost::log::sources::logger lg;
 	};
 }
