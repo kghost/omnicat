@@ -5,7 +5,9 @@
 #include <io.h>
 #endif
 #include <stdio.h>
+#include <boost/log/utility/setup/console.hpp>
 
+#include "../omniengine/utilities.h"
 #include "../omniengine/encoding.h"
 #include "../omniengine/Registry.h"
 #include "../omniengine/Entity.h"
@@ -26,17 +28,23 @@ int main(int argc, char *argv[], char *envp[])
 	::_setmode(_fileno(stderr), _O_U16TEXT);
 #endif
 	try {
+		Omni::utf8cerr << u8"𦕂" << std::endl;
+#ifdef USE_WIDECHAR_API
+		boost::log::add_console_log(Omni::utf8cerr);
+#else
+		boost::log::add_console_log(std::cout);
+#endif
 		auto registry = Omni::getRegistry();
 		registry->loadModule("omnimodule-base");
 		auto p = Omni::Parser::parse(registry, Omni::toUTF8(
-			L" TCP-LISTEN { fork, localhost:12345 ( a b )}"
+			L" TCP-LISTEN { fork, localhost:12345 ( a b ) }"
 		));
 		auto e = p->getResult();
 		e->prepare();
 		start(e);
 	} catch (const Omni::Exception & exception) {
 #ifdef USE_WIDECHAR_API
-		std::wcerr << Omni::fromUTF8(std::string(exception.what())) << std::endl;
+		Omni::utf8cerr << exception.what() << std::endl;
 #else
 		std::cerr << exception.what() << std::endl;
 #endif

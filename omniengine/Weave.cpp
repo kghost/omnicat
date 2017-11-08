@@ -36,7 +36,9 @@ namespace Omni {
 		class FiberSwitchEnd : public FiberSwitch {
 		public:
 			virtual ~FiberSwitchEnd() {}
-			virtual Fiber unwind(std::exception_ptr && eptr) {}
+			virtual Fiber unwind(std::exception_ptr && eptr) {
+				return unwind(std::move(eptr));
+			}
 		};
 
 		class FiberSwitchYield : public FiberSwitch {

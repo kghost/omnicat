@@ -12,10 +12,10 @@
 #define BOOST_SPIRIT_UNICODE // We'll use unicode (UTF8) all throughout
 #include <boost/regex/pending/unicode_iterator.hpp>
 #ifndef NDEBUG
-#include "utilities.h"
 #define BOOST_SPIRIT_DEBUG
 #ifdef USE_WIDECHAR_API
-#define BOOST_SPIRIT_DEBUG_OUT Omni::utf8cout
+#include "utilities.h"
+#define BOOST_SPIRIT_DEBUG_OUT Omni::utf8cerr
 #endif
 #include <boost/spirit/include/classic_debug.hpp>
 #endif

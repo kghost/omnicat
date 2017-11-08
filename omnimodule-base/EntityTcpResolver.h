@@ -12,6 +12,7 @@
 namespace Omni {
 	class Registry;
 	class InstanceResolver;
+	class InstanceTcpResolver;
 	class EntityTcpResolver : public Resolver, public std::enable_shared_from_this<EntityTcpResolver> {
 	public:
 		EntityTcpResolver(std::shared_ptr<Registry> registry) : registry(registry), options(*this) {}
@@ -20,6 +21,8 @@ namespace Omni {
 			if (!hasHost) hasHost = false;
 			if (!hasService) hasService = false;
 		}
+
+		typedef InstanceTcpResolver InstanceType;
 
 		virtual Fiber::Fiber createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<InstanceResolver>> complete);
 	public:
