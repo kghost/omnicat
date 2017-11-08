@@ -14,7 +14,7 @@ namespace Omni {
 			[&](auto&& handler) {
 				auto o = std::make_shared<boost::asio::ip::tcp::resolver>(io);
 				o->async_resolve(q, handler([complete = std::move(complete), o](boost::asio::ip::tcp::resolver::iterator iterator) {
-					typename EndpointsType v;
+					typename InstanceTcpResolver::EndpointsType v;
 					auto end = decltype(iterator)();
 					std::transform(iterator, end, std::back_inserter(v), [](auto i) { return i; });
 					return complete(v);

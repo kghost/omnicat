@@ -71,9 +71,6 @@ namespace Omni {
 			bool done = false;
 		};
 
-		static Fiber schedule(std::shared_ptr<FiberSwitch>&& fiber, std::function<void(Restart&&)>&& finalize) {
-		}
-
 		SHARED void run(CodePiece<Continuation>&& body) {
 			auto fiber = std::make_shared<FiberSwitchMain>();
 			try {

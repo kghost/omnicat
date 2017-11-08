@@ -28,7 +28,6 @@ int main(int argc, char *argv[], char *envp[])
 	::_setmode(_fileno(stderr), _O_U16TEXT);
 #endif
 	try {
-		Omni::utf8cerr << u8"𦕂" << std::endl;
 #ifdef USE_WIDECHAR_API
 		boost::log::add_console_log(Omni::utf8cerr);
 #else
