@@ -2,6 +2,8 @@
 
 #include "InstanceTcpResolver.h"
 
+#include <boost/log/trivial.hpp>
+
 #include "../omniengine/WeaverAdapterAsio.h"
 #include "EntityTcpResolver.h"
 

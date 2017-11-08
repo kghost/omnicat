@@ -17,8 +17,9 @@ namespace Omni {
 		return entity->resolver->createInstance(io, [&io, complete = std::move(complete)](std::shared_ptr<InstanceResolver>&& r) {
 			return r->resolve(io, true, [complete = std::move(complete)](auto addresses) {
 				auto as = boost::any_cast<InstanceTcpResolver::EndpointsType>(addresses);
-				BOOST_LOG_TRIVIAL(error) << "asdfasfas";
-
+				for (auto i : as) {
+					BOOST_LOG_TRIVIAL(info) << i.endpoint();
+				}
 				return complete();
 			});
 		});
