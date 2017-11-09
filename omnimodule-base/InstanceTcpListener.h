@@ -2,7 +2,8 @@
 
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
-#include <boost/log/sources/logger.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/sources/severity_logger.hpp>
 
 #include "../omniengine/Instance.h"
 #include "../omniengine/Weave.h"
@@ -16,10 +17,15 @@ namespace Omni {
 
 		virtual Fiber::Fiber start(boost::asio::io_service& io, Completion<> complete);
 		virtual Fiber::Fiber stop(boost::asio::io_service& io, Completion<> complete);
+
+		boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 	private:
 		std::shared_ptr<EntityTcpListener> entity;
-		boost::asio::ip::tcp::socket sock;
 
-		boost::log::sources::logger lg;
+		std::list<std::tuple<
+			boost::asio::ip::tcp::endpoint,
+			std::shared_ptr<boost::asio::ip::tcp::acceptor>,
+			Fiber::Fiber
+		>> acceptors;
 	};
 }

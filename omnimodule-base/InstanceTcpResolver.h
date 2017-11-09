@@ -4,6 +4,8 @@
 #include <vector>
 #include <functional>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/sources/severity_logger.hpp>
 
 #include "../omniengine/InstanceResolver.h"
 #include "../omniengine/Weave.h"
@@ -25,6 +27,6 @@ namespace Omni {
 		std::shared_ptr<EntityTcpResolver> entity;
 		boost::asio::ip::tcp::resolver resolver;
 
-		boost::log::sources::logger lg;
+		boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
 	};
 }

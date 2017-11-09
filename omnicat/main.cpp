@@ -22,11 +22,6 @@ int wmain(int argc, wchar_t *argv[], wchar_t *envp[])
 int main(int argc, char *argv[], char *envp[])
 #endif
 {
-#ifdef USE_WIDECHAR_API
-	::_setmode(_fileno(stdin), _O_U16TEXT);
-	::_setmode(_fileno(stdout), _O_U16TEXT);
-	::_setmode(_fileno(stderr), _O_U16TEXT);
-#endif
 	try {
 		log_init();
 		auto registry = Omni::getRegistry();
@@ -37,8 +32,9 @@ int main(int argc, char *argv[], char *envp[])
 		auto e = p->getResult();
 		e->prepare();
 		start(e);
+		return 0;
 	} catch (const Omni::Exception & exception) {
 		BOOST_LOG_TRIVIAL(fatal) << exception.what();
+		return -1;
 	}
-	return 0;
 }

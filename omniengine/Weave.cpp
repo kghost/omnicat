@@ -47,7 +47,7 @@ namespace Omni {
 			virtual Fiber unwind(std::exception_ptr && eptr) {
 				return unwind(std::move(eptr));
 			}
-			std::shared_ptr<FiberSwitch> continued ;
+			std::shared_ptr<FiberSwitch> continued;
 			bool switched = false;
 		};
 
@@ -69,6 +69,7 @@ namespace Omni {
 
 			std::function<void()> join;
 			bool done = false;
+			bool joined = false;
 		};
 
 		SHARED void run(CodePiece<Continuation>&& body) {
@@ -87,11 +88,11 @@ namespace Omni {
 					outer->continued = continuation();
 				} else {
 					outer.reset();
-					try {
+					//try {
 						continuation();
-					} catch (...) {
-						outer->unwind(std::current_exception());
-					}
+					//} catch (...) {
+					//	outer->unwind(std::current_exception());
+					//}
 				}
 			});
 			fiber->switched = true;
@@ -100,38 +101,28 @@ namespace Omni {
 
 		SHARED Fiber fork(CodePiece<Continuation>&& body) {
 			auto fiber = std::make_shared<FiberSwitchThread>();
-			try {
+			//try {
 				auto inner = body([fiber] {
 					fiber->done = true;
 					if (bool(fiber->join)) fiber->join();
 					return std::make_shared<FiberSwitchEnd>();
 				});
-			} catch (...) {
-				return fiber->unwind(std::current_exception());
-			}
+			//} catch (...) {
+			//	return fiber->unwind(std::current_exception());
+			//}
 			return fiber;
 		}
 
 		SHARED Fiber join(Fiber fiber, Continuation continuation) {
 			auto f = std::dynamic_pointer_cast<FiberSwitchThread>(fiber);
+			assert(!f->joined);
+			f->joined = true;
 			if (f->done) return continuation();
 			else return yield([&](::Omni::Fiber::Restart&& restart) -> void {
 				f->join = [restart = std::move(restart), continuation = std::move(continuation)]() mutable {
 					restart(std::move(continuation));
 				};
 			});
-		}
-
-		SHARED Fiber join(std::stack<Fiber> &&fs,  Continuation continuation) {
-			if (fs.empty())
-				return continuation();
-			else {
-				auto head = fs.top();
-				fs.pop();
-				return join(head, [fs = std::move(fs), continuation = std::move(continuation)]() mutable {
-					return join(std::move(fs), std::move(continuation));
-				});
-			}
 		}
 	}
 }

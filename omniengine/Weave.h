@@ -63,7 +63,17 @@ namespace Omni {
 		SHARED Fiber fork(CodePiece<Continuation>&& body);
 		SHARED Fiber join(Fiber fiber, Continuation continuation);
 
-		SHARED Fiber join(std::stack<Fiber> &&fs,  Continuation continuation);
+		template<typename Iterator>
+		static Fiber join(Iterator begin, Iterator end, Continuation continuation) {
+			if (begin == end)
+				return continuation();
+			else {
+				auto& next = *begin;
+				return join(next, [begin = ++begin, end, continuation = std::move(continuation)]() mutable {
+					return join(begin, end, std::move(continuation));
+				});
+			}
+		}
 	}
 
 	template<typename ... Result> using Completion = std::function<Fiber::Fiber(Result && ...)>&&;

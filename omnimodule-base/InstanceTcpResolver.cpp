@@ -2,6 +2,8 @@
 
 #include "InstanceTcpResolver.h"
 
+#include <boost/format.hpp>
+#include <boost/log/attributes/constant.hpp>
 #include <boost/log/trivial.hpp>
 
 #include "../omniengine/WeaverAdapterAsio.h"
@@ -14,26 +16,36 @@ namespace Omni {
 	InstanceTcpResolver::~InstanceTcpResolver() {}
 
 	Fiber::Fiber InstanceTcpResolver::resolve(boost::asio::io_service & io, boost::asio::ip::tcp::resolver::query &q, Completion<EndpointsT&&> complete) {
-		return Fiber::Asio::yield<boost::asio::ip::tcp::resolver::iterator>(
-			[&](auto&& handler) {
-				auto o = std::make_shared<boost::asio::ip::tcp::resolver>(io);
+		boost::log::record rec = lg.open_record(boost::log::keywords::severity = boost::log::trivial::severity_level::debug);
+		auto u = std::rand();
+		if (rec) {
+			boost::log::record_ostream strm(rec);
+			strm << " Resolving[" << u << "]: family(" << q.hints().ai_family << "),type(" << q.hints().ai_socktype
+				<< "),protocol(" << q.hints().ai_protocol << "),flags(" << q.hints().ai_flags << ") "
+				<< q.host_name() << ":" << q.service_name();
+			strm.flush();
+			lg.push_record(boost::move(rec));
+		}
 
-				boost::log::record rec = lg.open_record(boost::log::keywords::severity = boost::log::trivial::severity_level::info);
+		return Fiber::Asio::yield<boost::asio::ip::tcp::resolver::iterator>([&](auto&& handler) {
+			auto o = std::make_shared<boost::asio::ip::tcp::resolver>(io);
+			o->async_resolve(q, handler([u, me = shared_from_this(), complete = std::move(complete), o](boost::asio::ip::tcp::resolver::iterator iterator) {
+				typename InstanceTcpResolver::EndpointsType v;
+				auto end = decltype(iterator)();
+				std::transform(iterator, end, std::back_inserter(v), [](auto i) { return i; });
+
+				boost::log::record rec = me->lg.open_record(boost::log::keywords::severity = boost::log::trivial::severity_level::debug);
 				if (rec) {
 					boost::log::record_ostream strm(rec);
-					strm << " Resolving: " << q;
-					for (auto i : as) strm << ' ' << i.endpoint();
-					lg.push_record(boost::move(rec));
+					strm << " Resolved[" << u << "]:";
+					for (auto i : v) strm << " " << i.endpoint();
+					strm.flush();
+					me->lg.push_record(boost::move(rec));
 				}
 
-				o->async_resolve(q, handler([me = enable_shared_from_this(), complete = std::move(complete), o](boost::asio::ip::tcp::resolver::iterator iterator) {
-					typename InstanceTcpResolver::EndpointsType v;
-					auto end = decltype(iterator)();
-					std::transform(iterator, end, std::back_inserter(v), [](auto i) { return i; });
-					return complete(v);
-				}));
-			}
-		);
+				return complete(v);
+			}));
+		});
 	}
 
 	Fiber::Fiber InstanceTcpResolver::resolve(boost::asio::io_service & io, bool passive, Completion<EndpointsT&&> complete) {
@@ -43,34 +55,34 @@ namespace Omni {
 		if (entity->hasService.value()) flags |= boost::asio::ip::resolver_query_base::flags::numeric_service;
 		auto result = std::make_shared<EndpointsType>();
 		auto& familyies = entity->family.value();
-		std::stack<Fiber::Fiber> children;
-		std::for_each(familyies.begin(), familyies.end(), [&](auto family) {
-			children.push(Fiber::fork([&](auto&& exit) {
+		auto children = std::make_shared<std::list<Fiber::Fiber>>();
+		for (auto& family : familyies) {
+			children->push_back(Fiber::fork([&](auto&& exit) {
 				switch (family) {
 					case decltype(entity)::element_type::Family::IPv4:
-						{
-							auto q = boost::asio::ip::tcp::resolver::query(boost::asio::ip::tcp::v4(), entity->host, entity->service, flags);
-							return resolve(io, q, [result, exit = std::move(exit)](auto&& r) {
-								auto v = boost::any_cast<EndpointsType>(r);
-								result->insert(result->end(), v.begin(), v.end());
-								return exit();
-							});
-						}
+					{
+						auto q = boost::asio::ip::tcp::resolver::query(boost::asio::ip::tcp::v4(), entity->host, entity->service, flags);
+						return resolve(io, q, [result, exit = std::move(exit)](auto&& r) {
+							auto v = boost::any_cast<EndpointsType>(r);
+							result->insert(result->end(), v.begin(), v.end());
+							return exit();
+						});
+					}
 					case decltype(entity)::element_type::Family::IPv6:
-						{
-							auto q = boost::asio::ip::tcp::resolver::query(boost::asio::ip::tcp::v6(), entity->host, entity->service, flags);
-							return resolve(io, q, [result, exit = std::move(exit)](auto&& r) {
-								auto v = boost::any_cast<EndpointsType>(r);
-								result->insert(result->end(), v.begin(), v.end());
-								return exit();
-							});
-						}
+					{
+						auto q = boost::asio::ip::tcp::resolver::query(boost::asio::ip::tcp::v6(), entity->host, entity->service, flags);
+						return resolve(io, q, [result, exit = std::move(exit)](auto&& r) {
+							auto v = boost::any_cast<EndpointsType>(r);
+							result->insert(result->end(), v.begin(), v.end());
+							return exit();
+						});
+					}
 					default:
 						OMNI_INTERNAL_ERROR;
 				}
 			}));
-		});
-		return Fiber::join(std::move(children), [result, complete = std::move(complete)] {
+		};
+		return Fiber::join(children->begin(), children->end(), [children, result, complete = std::move(complete)]{
 			return complete(std::move(*result));
 		});
 	}
