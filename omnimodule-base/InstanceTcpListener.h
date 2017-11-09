@@ -1,7 +1,10 @@
 #pragma once
 
+#include <list>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/intrusive/list.hpp>
+#include <boost/intrusive/list_hook.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/sources/severity_logger.hpp>
 
@@ -22,10 +25,17 @@ namespace Omni {
 	private:
 		std::shared_ptr<EntityTcpListener> entity;
 
-		std::list<std::tuple<
-			boost::asio::ip::tcp::endpoint,
-			std::shared_ptr<boost::asio::ip::tcp::acceptor>,
-			Fiber::Fiber
-		>> acceptors;
+		class AcceptHandler;
+		class Acceptor : private boost::noncopyable {
+			public:
+				Acceptor(std::shared_ptr<boost::asio::ip::tcp::acceptor> acceptor) : acceptor(acceptor) {}
+
+				boost::intrusive::list_member_hook<boost::intrusive::link_mode<boost::intrusive::auto_unlink>> hook_;
+
+				std::shared_ptr<boost::asio::ip::tcp::acceptor> acceptor;
+				Fiber::Fiber fiber;
+		};
+
+		boost::intrusive::list<Acceptor, boost::intrusive::constant_time_size<false>, boost::intrusive::member_hook<Acceptor, boost::intrusive::list_member_hook<boost::intrusive::link_mode<boost::intrusive::auto_unlink>>, &Acceptor::hook_>> acceptors;
 	};
 }

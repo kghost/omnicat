@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <vector>
+#include <set>
 #include <functional>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/log/trivial.hpp>
@@ -17,8 +17,8 @@ namespace Omni {
 		InstanceTcpResolver(std::shared_ptr<EntityTcpResolver> entity, boost::asio::io_service & io);
 		virtual ~InstanceTcpResolver();
 
-		using EndpointType = boost::asio::ip::basic_resolver_entry<boost::asio::ip::tcp>;
-		using EndpointsType = std::vector<EndpointType>;
+		using EndpointType = boost::asio::ip::tcp::endpoint;
+		using EndpointsType = std::set<EndpointType>;
 
 		virtual Fiber::Fiber resolve(boost::asio::io_service & io, bool passive, Completion<EndpointsT&&> complete);
 	private:

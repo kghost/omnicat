@@ -2,6 +2,7 @@
 
 #include "InstanceTcpResolver.h"
 
+#include <list>
 #include <boost/format.hpp>
 #include <boost/log/attributes/constant.hpp>
 #include <boost/log/trivial.hpp>
@@ -16,29 +17,23 @@ namespace Omni {
 	InstanceTcpResolver::~InstanceTcpResolver() {}
 
 	Fiber::Fiber InstanceTcpResolver::resolve(boost::asio::io_service & io, boost::asio::ip::tcp::resolver::query &q, Completion<EndpointsT&&> complete) {
-		boost::log::record rec = lg.open_record(boost::log::keywords::severity = boost::log::trivial::severity_level::debug);
 		auto u = std::rand();
-		if (rec) {
-			boost::log::record_ostream strm(rec);
-			strm << " Resolving[" << u << "]: family(" << q.hints().ai_family << "),type(" << q.hints().ai_socktype
-				<< "),protocol(" << q.hints().ai_protocol << "),flags(" << q.hints().ai_flags << ") "
-				<< q.host_name() << ":" << q.service_name();
-			strm.flush();
-			lg.push_record(boost::move(rec));
-		}
+		BOOST_LOG_SEV(lg, boost::log::trivial::severity_level::debug) << " Resolving[" << u << "]: family(" << q.hints().ai_family << "),type(" << q.hints().ai_socktype
+			<< "),protocol(" << q.hints().ai_protocol << "),flags(" << q.hints().ai_flags << ") "
+			<< q.host_name() << ":" << q.service_name();
 
 		return Fiber::Asio::yield<boost::asio::ip::tcp::resolver::iterator>([&](auto&& handler) {
 			auto o = std::make_shared<boost::asio::ip::tcp::resolver>(io);
-			o->async_resolve(q, handler([u, me = shared_from_this(), complete = std::move(complete), o](boost::asio::ip::tcp::resolver::iterator iterator) {
+			o->async_resolve(q, handler([me = shared_from_this(), complete = std::move(complete), u, o](boost::asio::ip::tcp::resolver::iterator iterator) {
 				typename InstanceTcpResolver::EndpointsType v;
 				auto end = decltype(iterator)();
-				std::transform(iterator, end, std::back_inserter(v), [](auto i) { return i; });
+				std::for_each(iterator, end, [&](auto& i) { v.insert(i); });
 
 				boost::log::record rec = me->lg.open_record(boost::log::keywords::severity = boost::log::trivial::severity_level::debug);
 				if (rec) {
 					boost::log::record_ostream strm(rec);
 					strm << " Resolved[" << u << "]:";
-					for (auto i : v) strm << " " << i.endpoint();
+					for (auto i : v) strm << " " << i;
 					strm.flush();
 					me->lg.push_record(boost::move(rec));
 				}
@@ -63,8 +58,7 @@ namespace Omni {
 					{
 						auto q = boost::asio::ip::tcp::resolver::query(boost::asio::ip::tcp::v4(), entity->host, entity->service, flags);
 						return resolve(io, q, [result, exit = std::move(exit)](auto&& r) {
-							auto v = boost::any_cast<EndpointsType>(r);
-							result->insert(result->end(), v.begin(), v.end());
+							for (auto& i : boost::any_cast<EndpointsType>(r)) result->insert(i);
 							return exit();
 						});
 					}
@@ -72,8 +66,7 @@ namespace Omni {
 					{
 						auto q = boost::asio::ip::tcp::resolver::query(boost::asio::ip::tcp::v6(), entity->host, entity->service, flags);
 						return resolve(io, q, [result, exit = std::move(exit)](auto&& r) {
-							auto v = boost::any_cast<EndpointsType>(r);
-							result->insert(result->end(), v.begin(), v.end());
+							for (auto& i : boost::any_cast<EndpointsType>(r)) result->insert(i);
 							return exit();
 						});
 					}
