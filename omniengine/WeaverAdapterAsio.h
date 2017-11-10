@@ -20,10 +20,11 @@ namespace Omni {
 				virtual ~ExceptionUnhandledError();
 
 				virtual const char* what() const noexcept;
+
+				ErrorCode::error_code ec;
 			private:
 #pragma warning(push)
 #pragma warning(disable: 4251)
-				ErrorCode::error_code ec;
 				std::string w;
 #pragma warning(pop)
 			};

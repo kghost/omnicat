@@ -14,15 +14,14 @@
 #include "InstanceTcpResolver.h"
 
 namespace Omni {
-	InstanceTcpListener::InstanceTcpListener(std::shared_ptr<EntityTcpListener> entity, boost::asio::io_service & io)
-		: entity(entity) {
+	InstanceTcpListener::InstanceTcpListener(std::shared_ptr<EntityTcpListener> entity, boost::asio::io_service & io) : entity(entity) {
 		lg.add_attribute("Component", boost::log::attributes::constant<std::string>((boost::format("%1%(%2%)") % typeid(*this).name() % this).str()));
 	}
 	InstanceTcpListener::~InstanceTcpListener() {}
 
 	class InstanceTcpListener::AcceptHandler : public std::enable_shared_from_this<AcceptHandler> {
 	public:
-		AcceptHandler(std::shared_ptr<InstanceTcpListener> instance, std::shared_ptr<InstanceTcpListener::Acceptor> acceptor, Fiber::Continuation&& exit)
+		AcceptHandler(std::shared_ptr<InstanceTcpListener> instance, std::shared_ptr<InstanceTcpListener::Acceptor> acceptor, Fiber::ContinuationRef&& exit)
 			: instance(instance), acceptor(acceptor), exit(std::move(exit)) {}
 
 		Fiber::Fiber operator()(boost::asio::io_service & io) {
@@ -48,21 +47,33 @@ namespace Omni {
 			return r->resolve(io, true, [me, &io, complete = std::move(complete)](auto addresses) {
 				auto as = boost::any_cast<InstanceTcpResolver::EndpointsType>(addresses);
 
+				boost::log::record rec = me->lg.open_record(boost::log::keywords::severity = boost::log::trivial::severity_level::info);
+				boost::log::record_ostream strm(rec);
+				if (rec) {
+					strm << " Listening on:";
+				}
+
 				for (auto& i : as) {
 					auto o = std::make_shared<boost::asio::ip::tcp::acceptor>(io, i);
 					auto acceptor = std::make_shared<Acceptor>(o);
-					acceptor->fiber = Fiber::fork([&](auto&& exit) {
-						auto handler = std::make_shared<AcceptHandler>(me, acceptor, std::move(exit));
-						return (*handler)(io);
+					if (rec) strm << ' ' << i << "[" << acceptor.get() << "]";
+					acceptor->fiber = Fiber::fork(boost::str(boost::format("listener %p") % acceptor.get()), [&](auto&& exit) {
+						return Fiber::handle([&](auto&& exit2) {
+							auto handler = std::make_shared<AcceptHandler>(me, acceptor, std::move(exit2));
+							return (*handler)(io);
+						}, [](std::exception_ptr && eptr, Fiber::ContinuationRef continuation) {
+							try {
+								std::rethrow_exception(eptr);
+							} catch (const Fiber::Asio::ExceptionUnhandledError & e) {
+								if (e.ec == boost::system::errc::operation_canceled) return continuation();
+								throw;
+							}
+						}, std::move(exit));
 					});
 					me->acceptors.push_back(*acceptor);
 				}
 
-				boost::log::record rec = me->lg.open_record(boost::log::keywords::severity = boost::log::trivial::severity_level::info);
 				if (rec) {
-					boost::log::record_ostream strm(rec);
-					strm << " Listening on:";
-					for (auto& i : me->acceptors) strm << ' ' << i.acceptor->local_endpoint() << "[" << &i << "]";
 					strm.flush();
 					me->lg.push_record(boost::move(rec));
 				}
@@ -74,6 +85,11 @@ namespace Omni {
 
 	Fiber::Fiber InstanceTcpListener::stop(boost::asio::io_service & io, Completion<> complete) {
 		for (auto & i : acceptors) i.acceptor->close();
-		return complete();
+
+		auto fs = std::make_shared<std::list<Fiber::Fiber>>();
+		for (auto & i : acceptors) fs->push_back(i.fiber);
+		return Fiber::join(fs->begin(), fs->end(), [fs, complete = std::move(complete)]{
+			return complete();
+		});
 	}
 }

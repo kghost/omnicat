@@ -176,7 +176,6 @@
     <ClInclude Include="Symbol.h" />
     <ClInclude Include="SymbolTable.h" />
     <ClInclude Include="WeaverAdapterAsio.h" />
-    <ClInclude Include="WeaverException.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />

@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <memory>
-#include <stack>
 #include <functional>
 
 #include "shared.h"
@@ -23,7 +22,7 @@ namespace Omni {
 		//  Transform:
 		//    V v = try { body } catch(...) { handle-fail }
 		//  To
-		//    Fiber WithTry([] -> Fiber { body }, handle-fail, Fiber (post-body)(V, Continuation))
+		//    Fiber WithTry([] -> Fiber { body }, handle-fail, Fiber (post-body)(V, ContinuationRef))
 		//
 		//  post-pause is a continuation object. Many language can auto generate it by using CPS transform, but in c++ world, we need to write it manually.
 		//  CPS form: instead returns a value , pausable returns a future
@@ -31,40 +30,22 @@ namespace Omni {
 		class FiberSwitch;
 		typedef std::shared_ptr<FiberSwitch> Fiber;
 
-		class FiberExceptionHandler {
-			public:
-				virtual ~FiberExceptionHandler() {
-#ifndef NDEBUG
-					assert(!installed);
-#endif
-				}
+		template<typename ContinuationRef, typename ... Args> using CodePiece = std::function<Fiber(Args && ..., ContinuationRef)>;
+		typedef std::function<Fiber()> Continuation;
+		typedef Continuation&& ContinuationRef;
 
-				virtual Fiber handle(std::exception_ptr && eptr);
-			protected:
-				void install();
-				void uninstall();
-			private:
-#ifndef NDEBUG
-				bool installed = false;
-#endif
-		};
-
-
-		template<typename Continuation, typename ... Args>
-		using CodePiece = std::function<Fiber(Args && ..., Continuation&&)>;
-
-		typedef std::function<Fiber()> ContinuationType;
-		typedef ContinuationType&& Continuation;
-
-		typedef std::function<void(Continuation&&)> Restart;
+		typedef std::function<void(ContinuationRef)> Restart;
 		SHARED Fiber yield(std::function<void(Restart&&)>&& finalize);
 
-		SHARED void run(CodePiece<Continuation>&& body);
-		SHARED Fiber fork(CodePiece<Continuation>&& body);
-		SHARED Fiber join(Fiber fiber, Continuation continuation);
+		SHARED void run(CodePiece<ContinuationRef>&& body);
+
+		SHARED Fiber handle(CodePiece<ContinuationRef>&& body, CodePiece<ContinuationRef, std::exception_ptr>&& handler, ContinuationRef continuation);
+
+		SHARED Fiber fork(std::string && name, CodePiece<ContinuationRef>&& body);
+		SHARED Fiber join(Fiber fiber, ContinuationRef continuation);
 
 		template<typename Iterator>
-		static Fiber join(Iterator begin, Iterator end, Continuation continuation) {
+		static Fiber join(Iterator begin, Iterator end, ContinuationRef continuation) {
 			if (begin == end)
 				return continuation();
 			else {

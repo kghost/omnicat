@@ -52,7 +52,7 @@ namespace Omni {
 		auto& familyies = entity->family.value();
 		auto children = std::make_shared<std::list<Fiber::Fiber>>();
 		for (auto& family : familyies) {
-			children->push_back(Fiber::fork([&](auto&& exit) {
+			children->push_back(Fiber::fork(boost::str(boost::format("resolver %p") % this), [&](auto&& exit) {
 				switch (family) {
 					case decltype(entity)::element_type::Family::IPv4:
 					{
