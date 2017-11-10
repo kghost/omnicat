@@ -8,7 +8,7 @@ dnl AC_CONFIG_SRCDIR([src/main.cpp])
 AX_IS_RELEASE([git-directory])
 AX_CHECK_ENABLE_DEBUG([yes])
 
-LT_INIT
+LT_INIT([disable-static])
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
 
