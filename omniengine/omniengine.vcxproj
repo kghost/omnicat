@@ -156,6 +156,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="encoding.h" />
+    <ClInclude Include="EntityPipeline.h" />
+    <ClInclude Include="InstancePipeline.h" />
     <ClInclude Include="Weave.h" />
     <ClInclude Include="ErrorCode.h" />
     <ClInclude Include="Factory.h" />
@@ -179,6 +181,8 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="encoding.cpp" />
+    <ClCompile Include="EntityPipeline.cpp" />
+    <ClCompile Include="InstancePipeline.cpp" />
     <ClCompile Include="Weave.cpp" />
     <ClCompile Include="InstanceResolver.cpp" />
     <ClCompile Include="ParserSupport.cpp" />

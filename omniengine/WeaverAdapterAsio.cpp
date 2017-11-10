@@ -2,8 +2,6 @@
 
 #include "WeaverAdapterAsio.h"
 
-#include <boost/locale/info.hpp>
-
 #include "encoding.h"
 
 namespace Omni {

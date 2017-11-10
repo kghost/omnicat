@@ -2,6 +2,7 @@
 
 #include "InstanceTcpListener.h"
 
+#include <type_traits>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/format.hpp>
 #include <boost/log/attributes/constant.hpp>
@@ -29,23 +30,16 @@ namespace Omni {
 			if (!o->is_open()) return exit();
 			return Fiber::Asio::yield<>([&](auto&& handler) {
 				auto peer = std::make_shared<boost::asio::ip::tcp::socket>(io);
-				auto peer_endpoint = std::make_shared<decltype(o)::element_type::endpoint_type>();
+				auto peer_endpoint = std::make_shared<std::remove_reference<decltype(o)>::type::element_type::endpoint_type>();
 				o->async_accept(*peer, *peer_endpoint, handler([&io, me = shared_from_this(), peer, peer_endpoint]{
-					boost::log::record rec = me->instance->lg.open_record(boost::log::keywords::severity = boost::log::trivial::severity_level::debug);
-					if (rec) {
-						boost::log::record_ostream strm(rec);
-						strm << " Accepted[" << me->acceptor.get() << "]: " << peer_endpoint;
-						strm.flush();
-						me->instance->lg.push_record(boost::move(rec));
-					}
-
+					BOOST_LOG_SEV(me->instance->lg, boost::log::trivial::severity_level::debug) << "Accepted[" << me->acceptor.get() << "]: " << *peer_endpoint;
 					return (*me)(io);
 				}));
 			});
 		}
 
 		std::shared_ptr<InstanceTcpListener> instance;
-		std::shared_ptr<InstanceTcpListener::Acceptor> acceptor;
+		std::shared_ptr<Acceptor> acceptor;
 		Fiber::Continuation exit;
 	};
 
@@ -77,6 +71,7 @@ namespace Omni {
 			});
 		});
 	}
+
 	Fiber::Fiber InstanceTcpListener::stop(boost::asio::io_service & io, Completion<> complete) {
 		for (auto & i : acceptors) i.acceptor->close();
 		return complete();

@@ -4,9 +4,9 @@ NAME
 
 SYNOPSIS
 
-	TCP-LISTENER { [address]:port, option = value, ... ( pipelines ) }
+	TCP-LISTENER { [address]:port, fork, option = value, ... ( pipelines ... ) }
 
-	TCP-LISTENER { [address]:port, ref=#symbol, option = value, ... ( @symbol { established-connection-options } | pipelines ) }
+	TCP-LISTENER { [address]:port, fork, ref=#symbol, option = value, ... ( @symbol { established-connection-options } pipelines ... ) }
 
 DESCRIPTION
 

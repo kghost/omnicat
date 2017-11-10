@@ -4,15 +4,16 @@ NAME
 
 SYNOPSIS
 
-	LISTENER { option = value, ... ( pipelines ) }
-	LISTENER { ref=#symbol, option = value, ... ( @symbol { established-socket-options } | pipelines ) }
+	LISTENER { option = value, ... ( pipelines ... ) }
+	
+	LISTENER { ref=#symbol, option = value, ... ( @symbol { established-socket-options } pipelines ... ) }
 
 DESCRIPTION
 
 	OPTIONS
 
 		fork (default off)
-			Equivalent to max=-1. Establish unlimited number of connections. (Note: it doesn't fork sub-processes)
+			Equivalent to max=0. Establish unlimited number of connections. (Note: it doesn't fork sub-processes)
 
 		max=<count> (default 1)
 			Limits the number of concurrent child processes [int]. Use 0 to disable.
