@@ -14,7 +14,7 @@ namespace Omni {
 		typedef std::function<boost::any()> RefT;
 		typedef std::function<RefT()> BindT;
 		void set(BindT binding);
-		operator bool(); //test whether the symbol is bound
+		operator bool(); // test whether the symbol is bound
 		RefT ref(); // request a ref to the symbol
 	private:
 		Key& key;

@@ -22,6 +22,9 @@ int wmain(int argc, wchar_t *argv[], wchar_t *envp[])
 int main(int argc, char *argv[], char *envp[])
 #endif
 {
+#ifndef NDEBUG
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 	try {
 		log_init();
 		auto registry = Omni::getRegistry();

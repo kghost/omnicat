@@ -2,6 +2,8 @@
 
 #include "encoding.h"
 
+#include <string>
+#include <codecvt>
 #include <locale>
 #include <memory>
 #include <boost/locale/info.hpp>

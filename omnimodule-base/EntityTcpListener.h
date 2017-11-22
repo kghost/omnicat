@@ -7,8 +7,6 @@
 #include "../omniengine/ParserSupport.h"
 #include "../omniengine/Entity.h"
 #include "../omniengine/Weave.h"
-#include "OptionsTcpListener.h"
-#include "OptionsListener.h"
 
 namespace Omni {
 	class Registry;
@@ -16,7 +14,7 @@ namespace Omni {
 	class InstanceTcpListener;
 	class EntityTcpListener : public Entity, public std::enable_shared_from_this<EntityTcpListener>{
 	public:
-		EntityTcpListener(std::shared_ptr<Registry> registry) : registry(registry), options{*this, *this} {}
+		EntityTcpListener(std::shared_ptr<Registry> registry) : registry(registry) {}
 		virtual void prepare();
 
 		typedef InstanceTcpListener InstanceType;
@@ -32,12 +30,6 @@ namespace Omni {
 		void setOption(const std::string & key, const std::string & value);
 
 		//#begin-region static configure fields before start
-		std::tuple<
-			OptionsTcpListener<EntityTcpListener, boost::asio::ip::tcp::socket::native_handle_type>::Impl,
-			OptionsListener<EntityTcpListener>::Impl
-		> options;
-		
-
 		std::shared_ptr<Resolver> resolver;
 		std::shared_ptr<Entity> pipeline;
 		unsigned int limit = 1;

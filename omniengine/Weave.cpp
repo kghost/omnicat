@@ -4,6 +4,7 @@
 
 #include <list>
 #include <stack>
+#include <optional>
 #include <functional>
 #include <boost/log/trivial.hpp>
 #include <boost/log/attributes/named_scope.hpp>
@@ -61,9 +62,9 @@ namespace Omni {
 		};
 
 		class FiberSwitchEnd : public FiberSwitch {
-			virtual Fiber unwind(std::exception_ptr && eptr) noexcept { assert(false); }
+			virtual Fiber unwind(std::exception_ptr && eptr) noexcept { assert(false); return nullptr; }
 			virtual void set(std::shared_ptr<FiberSwitch>) noexcept {}
-			virtual std::shared_ptr<FiberSwitch> next() noexcept { assert(false); }
+			virtual std::shared_ptr<FiberSwitch> next() noexcept { assert(false); return nullptr; }
 		};
 
 		class FiberSwitchYield : public FiberSwitchMiddle {

@@ -2,12 +2,12 @@
 
 #include <tuple>
 #include <set>
+#include <optional>
 #include <boost/asio/io_service.hpp>
 
 #include "../omniengine/ParserSupport.h"
 #include "../omniengine/Resolver.h"
 #include "../omniengine/Weave.h"
-#include "OptionsResolver.h"
 
 namespace Omni {
 	class Registry;
@@ -15,7 +15,7 @@ namespace Omni {
 	class InstanceTcpResolver;
 	class EntityTcpResolver : public Resolver, public std::enable_shared_from_this<EntityTcpResolver> {
 	public:
-		EntityTcpResolver(std::shared_ptr<Registry> registry) : registry(registry), options(*this) {}
+		EntityTcpResolver(std::shared_ptr<Registry> registry) : registry(registry) {}
 		virtual void prepare() {
 			if (!family) family = {Family::IPv4, Family::IPv6};
 			if (!hasHost) hasHost = false;
@@ -27,10 +27,6 @@ namespace Omni {
 		virtual Fiber::Fiber createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<InstanceResolver>> complete);
 	public:
 		// needed by parser
-		std::tuple<
-			OptionsResolver<EntityTcpResolver>::Impl
-		> options;
-
 		Parser::Type groupOptionType(const std::string & key);
 		void setRawOption(const std::string & value);
 		void setOption(const std::string & key);

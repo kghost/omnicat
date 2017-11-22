@@ -4,10 +4,13 @@
 #include "../config.h"
 #endif
 
-#include <iostream>
-#include <string>
-#include <locale>
-#include <codecvt>
+#ifdef _WIN32
+#ifndef NDEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+#endif
 
 #ifdef __linux__
 #elif _WIN32
@@ -17,7 +20,6 @@
 #include <SDKDDKVer.h>
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <Windows.h>
-
 #define USE_WIDECHAR_API 1
 #else
 #endif
