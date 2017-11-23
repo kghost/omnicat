@@ -11,6 +11,8 @@
 namespace Omni {
 	class Registry;
 	class Resolver;
+	class EntityPipeline;
+	class EntityTcpConnection;
 	class InstanceTcpListener;
 	class EntityTcpListener : public Entity, public std::enable_shared_from_this<EntityTcpListener>{
 	public:
@@ -29,11 +31,12 @@ namespace Omni {
 		void setOption(const std::string & key);
 		void setOption(const std::string & key, const std::string & value);
 
-		//#begin-region static configure fields before start
+		//{ static configure fields before start
 		std::shared_ptr<Resolver> resolver;
-		std::shared_ptr<Entity> pipeline;
+		std::shared_ptr<EntityPipeline> pipeline;
+		std::shared_ptr<EntityTcpConnection> connection;
 		unsigned int limit = 1;
-		//#end-region
+		//}
 	private:
 		std::shared_ptr<Registry> registry;
 

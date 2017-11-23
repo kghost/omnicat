@@ -51,8 +51,6 @@ namespace Omni {
 			return os;
 		}
 
-		class Placeholder {};
-
 		class grammar : public boost::spirit::qi::grammar<
 			boost::u8_to_u32_iterator<std::string::const_iterator>,
 			std::shared_ptr<Object>(),

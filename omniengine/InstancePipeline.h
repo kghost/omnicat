@@ -1,6 +1,6 @@
 #pragma once
 
-#include <list>
+#include <vector>
 #include <memory>
 #include <optional>
 
@@ -8,12 +8,17 @@
 
 namespace Omni {
 	class Entity;
+	class EntityPipeline;
 	class Instance;
-	class InstancePipeline : public Instance {
+	class InstancePipeline : public Instance, public std::enable_shared_from_this<InstancePipeline> {
 	public:
-		InstancePipeline();
+		InstancePipeline(std::vector<std::shared_ptr<Instance>>&& components);
 		virtual ~InstancePipeline();
+
+		virtual Fiber::Fiber start(boost::asio::io_service& io, Completion<> complete);
+		virtual Fiber::Fiber stop(boost::asio::io_service& io, Completion<> complete);
 	private:
-		std::list<std::tuple<std::shared_ptr<Entity>, std::optional<std::shared_ptr<Instance>>>> assembling;
+		std::shared_ptr<EntityPipeline> entity;
+		std::vector<std::shared_ptr<Instance>> components;
 	};
 }

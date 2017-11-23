@@ -30,7 +30,7 @@ namespace Omni {
 			return Fiber::Asio::yield<>([&](auto&& handler) {
 				auto peer = std::make_shared<boost::asio::ip::tcp::socket>(io);
 				auto peer_endpoint = std::make_shared<std::remove_reference<decltype(o)>::type::element_type::endpoint_type>();
-				o->async_accept(*peer, *peer_endpoint, handler([&io, me = shared_from_this(), peer, peer_endpoint]{
+				o->async_accept(*peer, *peer_endpoint, handler([&io, me = this->shared_from_this(), peer, peer_endpoint] {
 					BOOST_LOG_SEV(me->instance->lg, boost::log::trivial::severity_level::debug) << "Accepted[" << me->acceptor.get() << "]: " << *peer_endpoint;
 					return (*me)(io);
 				}));
