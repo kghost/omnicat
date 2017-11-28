@@ -41,7 +41,6 @@ namespace Omni {
 			if (last) return last;
 			else return e.setRawOption(*this, value);
 		});
-		
 	}
 
 	void EntityTcpListener::setOption(const std::string & key) {

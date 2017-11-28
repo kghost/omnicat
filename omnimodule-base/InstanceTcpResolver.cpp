@@ -24,7 +24,7 @@ namespace Omni {
 
 		return Fiber::Asio::yield<boost::asio::ip::tcp::resolver::iterator>([&](auto&& handler) {
 			auto o = std::make_shared<boost::asio::ip::tcp::resolver>(io);
-			o->async_resolve(q, handler([me = this->shared_from_this(), complete = std::move(complete), u, o](boost::asio::ip::tcp::resolver::iterator iterator) {
+			o->async_resolve(q, handler([me = shared_from_this(), complete = std::move(complete), u, o](boost::asio::ip::tcp::resolver::iterator iterator) {
 				typename InstanceTcpResolver::EndpointsType v;
 				auto end = decltype(iterator)();
 				std::for_each(iterator, end, [&](auto& i) { v.insert(i); });
