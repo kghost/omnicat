@@ -15,7 +15,7 @@ namespace Omni {
 	class InstanceTcpResolver;
 	class EntityTcpResolver : public Resolver, public std::enable_shared_from_this<EntityTcpResolver> {
 	public:
-		EntityTcpResolver(std::shared_ptr<Registry> registry) : registry(registry) {}
+		EntityTcpResolver(std::shared_ptr<Registry> registry) : Resolver(registry) {}
 		virtual void prepare() {
 			if (!family) family = {Family::IPv4, Family::IPv6};
 			if (!hasHost) hasHost = false;
@@ -40,11 +40,7 @@ namespace Omni {
 		std::string host = "localhost";
 		std::string service = "omnicat";
 		//#end-region
-
-		std::shared_ptr<Registry> getRegistry() { return registry; }
 	private:
-		std::shared_ptr<Registry> registry;
-
 		//#begin-region runtime states
 		//std::list<std::shared_ptr<Instance>> instances;
 		//#end-region

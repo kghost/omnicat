@@ -7,6 +7,7 @@
 #include "InstanceResolver.h"
 
 namespace Omni {
+	Resolver::Resolver(std::shared_ptr<Registry> registry) : Entity(registry) {}
 	SHARED_MEMBER Fiber::Fiber Resolver::createInstance(boost::asio::io_service & io, Completion<std::shared_ptr<Instance>> complete) {
 		return createInstance(io, Completion<std::shared_ptr<InstanceResolver>>{
 			[complete = std::move(complete)](std::shared_ptr<InstanceResolver> && e) { return complete(e); }

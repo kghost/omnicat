@@ -9,22 +9,19 @@
 #include "../omniengine/Weave.h"
 
 namespace Omni {
-	class Registry;
 	class Resolver;
 	class EntityPipeline;
 	class EntityTcpConnection;
 	class InstanceTcpListener;
 	class EntityTcpListener : public Entity, public std::enable_shared_from_this<EntityTcpListener>{
 	public:
-		EntityTcpListener(std::shared_ptr<Registry> registry) : registry(registry) {}
+		EntityTcpListener(std::shared_ptr<Registry> registry) : Entity(registry) {}
 		virtual void prepare();
 
 		typedef InstanceTcpListener InstanceType;
 
 		virtual Fiber::Fiber createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<Instance>> complete);
 	public:
-		std::shared_ptr<Registry> getRegistry() { return registry; }
-
 		// needed by parser
 		Parser::Type groupOptionType(const std::string & key);
 		void setRawOption(const std::string & value);
@@ -38,8 +35,6 @@ namespace Omni {
 		unsigned int limit = 1;
 		//}
 	private:
-		std::shared_ptr<Registry> registry;
-
 		//#begin-region runtime states
 		//std::list<std::shared_ptr<Instance>> instances;
 		//#end-region

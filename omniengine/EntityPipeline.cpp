@@ -7,7 +7,7 @@
 #include "InstancePipeline.h"
 
 namespace Omni {
-	EntityPipeline::EntityPipeline() {}
+	EntityPipeline::EntityPipeline(std::shared_ptr<Registry> registry) : Entity(registry) {}
 	EntityPipeline::~EntityPipeline() {}
 
 	Fiber::Fiber EntityPipeline::createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<Instance>> complete) {

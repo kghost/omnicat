@@ -11,7 +11,7 @@ namespace Omni {
 	class InstancePipeline;
 	class EntityPipeline : public Entity, public std::enable_shared_from_this<EntityPipeline> {
 	public:
-		EntityPipeline();
+		EntityPipeline(std::shared_ptr<Registry> registry);
 		virtual ~EntityPipeline();
 
 		virtual Fiber::Fiber createInstance(boost::asio::io_service& io, Completion<std::shared_ptr<Instance>> complete);
