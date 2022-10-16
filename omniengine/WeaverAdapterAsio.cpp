@@ -8,7 +8,7 @@ namespace Omni {
 	namespace Fiber {
 		namespace Asio {
 			ExceptionUnhandledError::ExceptionUnhandledError(ErrorCode::error_code ec)
-				: ec(ec), w("Un-handled Error: " + toUTF8(ec.message())) {}
+				: ec(ec), w("Un-handled Error: " + ec.message()) {}
 			ExceptionUnhandledError::~ExceptionUnhandledError() {}
 
 			const char* ExceptionUnhandledError::what() const noexcept {

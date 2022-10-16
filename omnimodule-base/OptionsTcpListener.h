@@ -20,12 +20,12 @@ namespace Omni {
 			"", {
 				Parser::Type::RAW, {"[address]:port", "Equivalent to \"bind = ${address}:${port}\"", ":omnicat"},
 				typename ParentT::RawT([](OwnerT& owner, const std::string & value, int) {
-					auto ws = fromUTF8(value);
-					auto i = ws.find_last_of(':');
+					// TODO: handle unicode
+					auto i = value.find_last_of(':');
 					if (i == std::string::npos) throw ExceptionInvalidArgument("malformed listening address or unknown option: " + value);
 					if (bool(owner.resolver)) throw ExceptionInvalidArgument("multiple listening address: " + value);
-					auto address = toUTF8(ws.substr(0, i));
-					auto service = toUTF8(ws.substr(i + 1));
+					auto address = value.substr(0, i);
+					auto service = value.substr(i + 1);
 					auto resolver = std::dynamic_pointer_cast<EntityTcpResolver>(owner.getRegistry()->createEntity("TCP-RESOLVER"));
 					assert(resolver);
 					resolver->setOption("host", address);

@@ -106,7 +106,7 @@ namespace Omni {
 				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 				NULL, err, 0, (LPWSTR)&buff, 0, NULL);
 			std::shared_ptr<boost::remove_pointer<decltype(buff)>::type> p(buff, &::LocalFree);
-			throw ExceptionModuleNotFound(m.string(), toUTF8(std::wstring(buff)));
+			throw ExceptionModuleNotFound(m.string(), fromSystemToU8(std::wstring(buff)));
 		}
 
 		auto proc = reinterpret_cast<decltype(&getModule)>(::GetProcAddress(lib, fname.c_str()));
@@ -116,7 +116,7 @@ namespace Omni {
 		if (proc == nullptr) throw ExceptionModuleNotFound(m.string(), "can't locate entry function");
 		auto module = proc();
 
-		for (auto entry : module->getFactories(shared_from_this())) {
+		for (auto & entry : module->getFactories(shared_from_this())) {
 			// XXX: check for already exists entry
 			auto & i = classes[entry.first];
 			i = entry.second;

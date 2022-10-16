@@ -1,5 +1,7 @@
 #pragma once
 
+#define BOOST_USE_WINAPI_VERSION BOOST_WINAPI_VERSION_WIN7
+
 #ifdef HAVE_CONFIG_H
 #include "../config.h"
 #endif

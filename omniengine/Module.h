@@ -2,6 +2,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <boost/core/noncopyable.hpp>
 
 namespace Omni {

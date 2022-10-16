@@ -34,19 +34,19 @@
 namespace Omni {
 	namespace Parser {
 		template <typename Ostream>
-		Ostream& operator<<(Ostream& os, const char * o) {
+		Ostream& operator<<(Ostream& os, const char* o) {
 			os << std::string(o);
 			return os;
 		}
 
 		template <typename Ostream, typename T>
-		Ostream& operator<<(Ostream& os, T * o) {
+		Ostream& operator<<(Ostream& os, T* o) {
 			os << typeid(*o).name() << "#" << reinterpret_cast<std::uintptr_t>(o);
 			return os;
 		}
 
 		template <typename Ostream, typename T>
-		Ostream& operator<<(Ostream& os, T & o) {
+		Ostream& operator<<(Ostream& os, T& o) {
 			os << typeid(o).name() << "@" << reinterpret_cast<std::uintptr_t>(&o);
 			return os;
 		}
@@ -75,24 +75,24 @@ namespace Omni {
 		private:
 			std::shared_ptr<Registry> registry;
 
-			boost::spirit::qi::rule<Iterator, wchar_t()> double_quoted_char = {
+			boost::spirit::qi::rule<Iterator, char32_t()> double_quoted_char = {
 				(~boost::spirit::unicode::char_("\"\\")) |
 				((boost::spirit::lit('\\') >> boost::spirit::unicode::char_("\"\\"))),
 				"double_quoted_char"
 			};
-			boost::spirit::qi::rule<Iterator, std::vector<wchar_t>()> single_quoted = {
+			boost::spirit::qi::rule<Iterator, std::vector<char32_t>()> single_quoted = {
 				boost::spirit::lit('\'') >> (*(~boost::spirit::unicode::char_('\''))) >> boost::spirit::lit('\''),
 				"single_quoted"
 			};
-			boost::spirit::qi::rule<Iterator, std::vector<wchar_t>()> double_quoted = {
+			boost::spirit::qi::rule<Iterator, std::vector<char32_t>()> double_quoted = {
 				boost::spirit::lit('\"') >> (*double_quoted_char) >> boost::spirit::lit('\"'),
 				"double_quoted"
 			};
-			boost::spirit::qi::rule<Iterator, wchar_t()> special_charator = {
+			boost::spirit::qi::rule<Iterator, char32_t()> special_charator = {
 				boost::spirit::unicode::char_("{}[]()=,\'\"\\") | boost::spirit::unicode::space,
 				"special_charator"
 			};
-			boost::spirit::qi::rule<Iterator, std::vector<wchar_t>()> str_elem = {
+			boost::spirit::qi::rule<Iterator, std::vector<char32_t>()> str_elem = {
 				(boost::spirit::unicode::char_ - special_charator) |
 				(boost::spirit::lit('\\') >> special_charator) |
 				double_quoted | single_quoted,
@@ -101,11 +101,14 @@ namespace Omni {
 			boost::spirit::qi::rule<Iterator, std::string()> str = {
 				boost::spirit::lexeme[
 					(+str_elem)[
-						boost::spirit::_val = boost::phoenix::bind([](std::vector<std::vector<wchar_t>> & v) -> std::string {
-							std::basic_stringstream<wchar_t> ss;
-							std::ostream_iterator<wchar_t, wchar_t> wssi(ss);
-							for (auto o : v) std::copy(o.begin(), o.end(), wssi);
-							return toUTF8(ss.str());
+						boost::spirit::_val = boost::phoenix::bind([](std::vector<std::vector<char32_t>>& v) -> std::string {
+							std::stringstream ss;
+							std::ostream_iterator<char> wssi(ss);
+							for (auto& o : v) {
+								using u8i = boost::u32_to_u8_iterator<std::vector<char32_t>::const_iterator, char>;
+								std::copy(u8i(o.begin()), u8i(o.end()), wssi);
+							}
+							return ss.str();
 						}, boost::spirit::_1)
 					]
 				],
@@ -113,11 +116,11 @@ namespace Omni {
 			};
 			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<Group>, std::string), boost::spirit::unicode::space_type> option_value = {
 				boost::spirit::lit('=') >> lazy(
-					boost::phoenix::bind([this](std::shared_ptr<Group> r1, const std::string & r2) -> boost::spirit::qi::rule<Iterator> {
+					boost::phoenix::bind([this](std::shared_ptr<Group> r1, const std::string& r2) -> boost::spirit::qi::rule<Iterator> {
 						switch (r1->groupOptionType(r2)) {
 							case Type::STRING:
 								return str[
-									boost::phoenix::bind([r1, r2](const std::string & val) -> void {
+									boost::phoenix::bind([r1, r2](const std::string& val) -> void {
 										r1->setOption(r2, val);
 									}, boost::spirit::_1)
 								];
@@ -129,7 +132,7 @@ namespace Omni {
 			};
 			boost::spirit::qi::rule<Iterator, void(std::shared_ptr<Group>), boost::spirit::qi::locals<std::string>, boost::spirit::unicode::space_type> option = {
 				str[boost::spirit::_a = boost::spirit::_1] >> lazy(
-					boost::phoenix::bind([this](std::shared_ptr<Group> r1, const std::string & a) -> boost::spirit::qi::rule<Iterator, boost::spirit::unicode::space_type> {
+					boost::phoenix::bind([this](std::shared_ptr<Group> r1, const std::string& a) -> boost::spirit::qi::rule<Iterator, boost::spirit::unicode::space_type> {
 						switch (r1->groupOptionType(a)) {
 							case Type::FLAG:
 								r1->setOption(a);
@@ -163,13 +166,13 @@ namespace Omni {
 						if (r1->hasPipeline()) return pipeline(boost::phoenix::val(r1));
 						else return boost::spirit::eps;
 					}, boost::spirit::_r1)
-				)>> boost::spirit::lit('}'),
+				) >> boost::spirit::lit('}'),
 				"group"
 			};
 			boost::spirit::qi::rule<Iterator, std::shared_ptr<Object>(), boost::spirit::qi::locals<std::shared_ptr<Object>>,
 				boost::spirit::unicode::space_type> object = {
 				(str[
-					boost::spirit::_pass = boost::phoenix::bind([this](const std::string & r1, std::shared_ptr<Object> & a) -> bool {
+					boost::spirit::_pass = boost::phoenix::bind([this](const std::string& r1, std::shared_ptr<Object>& a) -> bool {
 						return bool(a = createObject(registry, r1));
 					}, boost::spirit::_1, boost::spirit::_a)
 				] >> lazy(
@@ -183,9 +186,8 @@ namespace Omni {
 							if (p->isListOptional()) return list(boost::phoenix::val(p)) | boost::spirit::eps;
 							else return list(boost::phoenix::val(p));
 						} else return boost::spirit::eps;
-					}, boost::spirit::_a)
-				))[boost::spirit::_val = boost::spirit::_a],
-				"object"
+					}, boost::spirit::_a))
+				)[boost::spirit::_val = boost::spirit::_a], "object"
 			};
 			boost::spirit::qi::rule<Iterator, std::shared_ptr<Object>(), boost::spirit::unicode::space_type> result = {
 				object >> boost::spirit::eoi,
@@ -193,12 +195,13 @@ namespace Omni {
 			};
 		};
 
-		SHARED std::shared_ptr<Object> parse(std::shared_ptr<Registry> registry, const std::string & input) {
+		SHARED std::shared_ptr<Object> parse(std::shared_ptr<Registry> registry, const std::string& input) {
 			boost::u8_to_u32_iterator<std::string::const_iterator> begin(input.begin()), end(input.end());
 			std::shared_ptr<Object> v;
 			if (boost::spirit::qi::phrase_parse(begin, end, grammar(registry), boost::spirit::unicode::space, v)) {
 				return v;
-			} else {
+			}
+			else {
 				return nullptr;
 			}
 		}

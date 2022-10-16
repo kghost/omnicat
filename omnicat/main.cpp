@@ -31,7 +31,7 @@ int main(int argc, char *argv[], char *envp[])
 		log_init();
 		auto registry = Omni::getRegistry();
 		registry->loadModule("omnimodule-base");
-		auto p = Omni::Parser::parse(registry, Omni::toUTF8(
+		auto p = Omni::Parser::parse(registry, Omni::fromSystemToU8(
 			L" TCP-LISTEN { fork, localhost:12345 ( a b ) }"
 		));
 		auto e = p->getResult();

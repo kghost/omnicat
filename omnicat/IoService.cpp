@@ -33,7 +33,7 @@ namespace Omni {
 			return e->createInstance(io, [&io, exit = std::move(exit)](std::shared_ptr<Instance> && o) mutable {
 				return o->start(io, [&io, o, exit = std::move(exit)]() mutable {
 					auto signals = std::make_shared<boost::asio::signal_set>(io, SIGINT, SIGTERM);
-					return Fiber::Asio::yield<int>([&](auto&& handler) {
+					return Fiber::Asio::yield<int>([&, exit = std::move(exit)](auto&& handler) {
 						signals->async_wait(handler([&io, signals, o, exit = std::move(exit)](int signal_number) mutable {
 							return o->stop(io, std::move(exit));
 						}));

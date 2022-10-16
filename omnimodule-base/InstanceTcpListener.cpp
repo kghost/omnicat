@@ -44,7 +44,7 @@ namespace Omni {
 	};
 
 	Fiber::Fiber InstanceTcpListener::start(boost::asio::io_service & io, Completion<> complete) {
-		return entity->resolver->createInstance(io, [me = shared_from_this(), &io, complete = std::move(complete)](std::shared_ptr<InstanceResolver>&& r) {
+		return entity->resolver->createInstance(io, [me = shared_from_this(), &io, complete = std::move(complete)](std::shared_ptr<InstanceResolver>&& r) mutable {
 			return r->resolve(io, true, [me, &io, complete = std::move(complete)](auto addresses) {
 				auto as = boost::any_cast<InstanceTcpResolver::EndpointsType>(addresses);
 
@@ -58,11 +58,11 @@ namespace Omni {
 					auto o = std::make_shared<boost::asio::ip::tcp::acceptor>(io, i);
 					auto acceptor = std::make_shared<Acceptor>(o);
 					if (rec) strm << ' ' << i << "[" << acceptor.get() << "]";
-					acceptor->fiber = Fiber::fork(boost::str(boost::format("listener %p") % acceptor.get()), [&](auto&& exit) {
+					acceptor->fiber = Fiber::fork(boost::str(boost::format("listener %p") % acceptor.get()), [&](auto&& exit) -> Fiber::Fiber {
 						return Fiber::handle([&](auto&& exit2) {
 							auto handler = std::make_shared<AcceptHandler>(me, acceptor, std::move(exit2));
 							return (*handler)(io);
-						}, [](std::exception_ptr && eptr, Fiber::ContinuationRef continuation) {
+						}, [](std::exception_ptr && eptr, Fiber::ContinuationRef continuation) -> Fiber::Fiber {
 							try {
 								std::rethrow_exception(eptr);
 							} catch (const Fiber::Asio::ExceptionUnhandledError & e) {
