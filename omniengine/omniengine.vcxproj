@@ -43,6 +43,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>true</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -105,8 +106,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -158,7 +157,6 @@
     <ClInclude Include="Encoding.h" />
     <ClInclude Include="EntityPipeline.h" />
     <ClInclude Include="InstancePipeline.h" />
-    <ClInclude Include="Weave.h" />
     <ClInclude Include="ErrorCode.h" />
     <ClInclude Include="Factory.h" />
     <ClInclude Include="InstanceResolver.h" />
@@ -175,14 +173,12 @@
     <ClInclude Include="Resolver.h" />
     <ClInclude Include="Symbol.h" />
     <ClInclude Include="SymbolTable.h" />
-    <ClInclude Include="WeaverAdapterAsio.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Encoding.cpp" />
     <ClCompile Include="EntityPipeline.cpp" />
     <ClCompile Include="InstancePipeline.cpp" />
-    <ClCompile Include="Weave.cpp" />
     <ClCompile Include="InstanceResolver.cpp" />
     <ClCompile Include="ParserSupport.cpp" />
     <ClCompile Include="Registry.cpp" />
@@ -190,7 +186,6 @@
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Resolver.cpp" />
-    <ClCompile Include="WeaverAdapterAsio.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

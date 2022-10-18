@@ -63,12 +63,6 @@
     <ClInclude Include="ErrorCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Weave.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WeaverAdapterAsio.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EntityPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -102,12 +96,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InstanceResolver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Weave.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WeaverAdapterAsio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EntityPipeline.cpp">
